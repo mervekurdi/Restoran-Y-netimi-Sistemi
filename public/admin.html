@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Yönetici Paneli (Lüks Altın)</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+        :root {
+    --bg-gradient: #0F172A;
+    --surface: #1E293B;
+    --surface-solid: #1E293B;
+    --border: #334155;
+    --primary: #F59E0B;
+    --primary-hover: #D97706;
+    --primary-light: rgba(245, 158, 11, 0.15);
+    --text: #F8FAFC;
+    --muted: #94A3B8;
+    --radius: 16px;
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    --gold-glow: 0 0 20px rgba(245, 158, 11, 0.2);
+    --secondary: #3B82F6;
+    --success: #10B981;
+    --warning: #EF4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Poppins',sans-serif;background:var(--bg-gradient);background-attachment:fixed;color:var(--text);display:flex;height:100vh;overflow:hidden}
+
+  .sidebar{width:280px;background:var(--surface-solid);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;box-shadow:5px 0 20px rgba(92,67,5,0.15);z-index:10}
+  .brand{padding:30px;font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:15px;border-bottom:1px solid var(--border)}
+  .brand a{text-decoration:none;color:inherit;display:flex;align-items:center;gap:10px}
+  
+  .nav-menu{padding:30px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .nav-item{padding:14px 20px;border-radius:12px;color:var(--muted);text-decoration:none;font-weight:600;font-size:1rem;cursor:pointer;transition:all 0.3s;border:1px solid transparent}
+  .nav-item:hover{color:var(--primary);background:var(--primary-light)}
+  .nav-item.active{background:var(--primary-light);color:var(--primary);border-color:var(--border);box-shadow:0 4px 10px rgba(138,100,18,0.2)}
+  
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:rgba(255, 255, 255, 0.05);backdrop-filter:blur(10px)}
+  .header{height:85px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;border-bottom:1px solid rgba(255, 255, 255, 0.08);background:rgba(15, 23, 42, 0.7)}
+  .page-title{font-family:'Poppins',sans-serif;font-size:2rem;font-weight:800;color:var(--primary);text-shadow:0 1px 2px rgba(255,255,255,0.8)}
+  .back-btn{text-decoration:none;background:var(--surface-solid);padding:10px 20px;border-radius:12px;color:var(--primary);font-weight:700;font-size:0.95rem;border:1px solid var(--border);box-shadow:0 4px 10px rgba(92,67,5,0.15);transition:all 0.3s}
+  .back-btn:hover{background:var(--primary);color:#0F172A; font-weight:700;;border-color:var(--primary)}
+  
+  .content-scroll{flex:1;overflow-y:auto;padding:40px}
+  .tab-pane{display:none}
+  .tab-pane.active{display:block}
+
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:30px;margin-bottom:40px}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:30px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+  .stat-label{font-size:0.95rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+  .stat-value{font-family:'Poppins',sans-serif;font-size:3rem;font-weight:800;color:var(--primary);text-shadow:0 2px 4px rgba(92,67,5,0.1)}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:40px;box-shadow:var(--shadow)}
+  .card-header{padding:25px 30px;border-bottom:1px solid var(--border);font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:800;color:var(--primary);display:flex;justify-content:space-between;align-items:center}
+  .card-body{padding:30px}
+  
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;padding:15px 30px;color:var(--primary);border-bottom:2px solid var(--border);font-weight:700;font-size:0.95rem;background:var(--primary-light);text-transform:uppercase}
+  td{padding:20px 30px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;font-size:0.95rem}
+  tr:last-child td{border-bottom:none}
+  
+  .btn{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:700;transition:all 0.2s;box-shadow:0 4px 10px rgba(92,67,5,0.1)}
+  .btn-gold{background:var(--primary);color:#0F172A; font-weight:700;}
+  .btn-gold:hover{background:var(--primary-hover);transform:translateY(-2px)}
+  .btn-danger{background:var(--warning);color:#FFF}
+  .btn-danger:hover{background:#B22222;transform:translateY(-2px)}
+
+  .form-group{margin-bottom:20px}
+  .form-group label{display:block;margin-bottom:8px;color:var(--muted);font-weight:600;font-size:0.95rem}
+  .form-control{width:100%;padding:14px 16px;background:rgba(255, 255, 255, 0.05);border:2px solid var(--border);color:var(--text);border-radius:12px;font-family:'Poppins',sans-serif;font-weight:500}
+  .form-control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 10px rgba(138,100,18,0.2)}
+
+  /* Modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(42,30,0,0.6);backdrop-filter:blur(5px);z-index:999;display:none;align-items:center;justify-content:center}
+  .modal-overlay.active{display:flex}
+  .modal-content{background:var(--surface-solid);width:500px;border-radius:16px;padding:35px;border:1px solid var(--border);box-shadow:0 25px 50px rgba(92,67,5,0.3)}
+  
+  .badge{padding:6px 12px;border-radius:12px;font-size:0.85rem;background:var(--primary-light);color:var(--primary);border:1px solid var(--border);font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="brand">👑 Yönetim Paneli</div>
+  <div class="nav-menu">
+    <a class="nav-item active" onclick="switchTab('overview')">📊 Genel Bakış</a>
+    <a class="nav-item" onclick="switchTab('menu')">🍔 Menü & Ürünler</a>
+    <a class="nav-item" onclick="switchTab('tables')">🏢 Masa Yönetimi</a>
+    <a class="nav-item" onclick="switchTab('orders')">🛒 Siparişler</a>
+    <a class="nav-item" onclick="switchTab('users')">👥 Kullanıcılar</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="header">
+    <div class="page-title" id="pageTitle">Genel Bakış</div>
+    <a href="/" class="back-btn">← Ana Sayfaya Dön</a>
+  </div>
+
+  <div class="content-scroll">
+    
+    <!-- OVERVIEW TAB -->
+    <div id="overview" class="tab-pane active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Aktif Toplam Ciro</span>
+          <span class="stat-value" id="totRev">₺0.00</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Toplam Masa Sayısı</span>
+          <span class="stat-value" id="totTable">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Sistemdeki Ürün</span>
+          <span class="stat-value" id="totProd">0</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Sistem Akışı ve Haftalık Analiz</div>
+        <div class="card-body" style="height:350px">
+          <canvas id="revChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENU TAB -->
+    <div id="menu" class="tab-pane">
+      <div class="card">
+        <div class="card-header">Kategoriler <button class="btn btn-gold" onclick="addCategory()">+ Yeni Kategori</button></div>
+        <div class="card-body">
+          <div id="catList" style="display:flex;gap:15px;flex-wrap:wrap"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Ürünler <button class="btn btn-gold" onclick="openProductModal()">+ Yeni Ürün Ekle</button></div>
+        <table>
+          <thead><tr><th>Görsel</th><th>Ürün Adı</th><th>Kategori</th><th>Fiyat</th><th>İşlem</th></tr></thead>
+          <tbody id="prodTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TABLES TAB -->
+    <div id="tables" class="tab-pane">
+      <div class="card" style="max-width:500px">
+        <div class="card-header">Masa Sayısı Yönetimi</div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>Toplam Masa Kapasitesi</label>
+            <input type="number" id="tableCountInput" class="form-control" value="25">
+          </div>
+          <button class="btn btn-gold" onclick="saveTableCount()">Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS TAB -->
+    <div id="orders" class="tab-pane">
+      <div class="card">
+        <div class="card-header">Tüm Sipariş Geçmişi <button class="btn btn-danger" onclick="clearOrders()">Tümünü Temizle</button></div>
+        <table>
+          <thead><tr><th>ID</th><th>Masa</th><th>Durum</th><th>Tutar</th><th>İşlem</th></tr></thead>
+          <tbody id="ordersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USERS TAB -->
+    <div id="users" class="tab-pane">
+      <div class="card">
+        <div class="card-header">Sistem Kullanıcıları <button class="btn btn-gold" onclick="addUser()">+ Yeni Kullanıcı</button></div>
+        <table>
+          <thead><tr><th>ID</th><th>Kullanıcı Adı</th><th>Rol</th><th>İşlem</th></tr></thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Product Modal -->
+<div class="modal-overlay" id="prodModal">
+  <div class="modal-content">
+    <h2 style="color:var(--primary);margin-bottom:20px;font-family:'Playfair Display';font-weight:800" id="prodModalTitle">Ürün Ekle</h2>
+    <input type="hidden" id="pId">
+    <div class="form-group">
+      <label>Ürün Adı</label>
+      <input type="text" id="pName" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Kategori</label>
+      <select id="pCat" class="form-control"></select>
+    </div>
+    <div class="form-group">
+      <label>Fiyat (₺)</label>
+      <input type="number" id="pPrice" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Açıklama</label>
+      <input type="text" id="pDesc" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Görsel URL veya Dosya Seç</label>
+      <div style="display:flex;gap:10px;">
+        <input type="text" id="pImg" class="form-control" placeholder="URL girin veya dosya seçin" style="flex:1;">
+        <input type="file" id="pImageFile" accept="image/*" class="form-control" style="width:auto;cursor:pointer;padding:11px;" onchange="handleImageUpload(event)">
+      </div>
+    </div>
+    <div style="display:flex;gap:15px;margin-top:30px">
+      <button class="btn btn-gold" style="flex:1;padding:15px;font-size:1.1rem" onclick="saveProduct()">Kaydet</button>
+      <button class="btn btn-danger" style="flex:1;padding:15px;font-size:1.1rem;background:#E58F65;color:#0F172A; font-weight:700;;border:none" onclick="document.getElementById('prodModal').classList.remove('active')">İptal</button>
+    </div>
+  </div>
+</div>
+
+<script src="/state.js"></script>
+<script>
+let STATE = getGlobalState();
+
+function switchTab(tabId){
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  document.querySelectorAll('.tab-pane').forEach(el=>el.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  
+  document.getElementById('pageTitle').textContent = event.target.textContent.substring(3);
+  renderAll();
+}
+
+function init(){
+  initChart();
+  renderAll();
+}
+
+function renderAll(){
+  STATE = getGlobalState();
+  
+  // Overview
+  document.getElementById('totTable').textContent = STATE.tables;
+  document.getElementById('totProd').textContent = STATE.products.length;
+  const rev = STATE.orders.reduce((sum, o) => sum + o.items.reduce((s2, i)=>s2+(i.price||0)*i.quantity, 0), 0);
+  document.getElementById('totRev').textContent = `₺${rev.toFixed(2)}`;
+
+  // Menu - Categories
+  const catList = document.getElementById('catList');
+  catList.innerHTML = STATE.categories.map((c, i) => `
+    <div style="background:var(--surface-solid);padding:10px 20px;border-radius:12px;border:2px solid var(--border);display:flex;align-items:center;gap:10px;font-weight:700;box-shadow:0 4px 10px rgba(92,67,5,0.1)">
+      ${c} <button style="background:none;border:none;color:#B22222;cursor:pointer;font-weight:900;font-size:1.1rem" onclick="deleteCategory(${i})">✕</button>
+    </div>
+  `).join('');
+
+  const pCat = document.getElementById('pCat');
+  pCat.innerHTML = STATE.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+
+  // Menu - Products
+  const prodTable = document.getElementById('prodTable');
+  prodTable.innerHTML = STATE.products.map(p => `
+    <tr>
+      <td><img src="${p.img}" style="width:70px;height:45px;object-fit:cover;border-radius:6px;border:1px solid var(--border);box-shadow:0 2px 5px rgba(0,0,0,0.1)"></td>
+      <td style="font-weight:700">${p.name}</td>
+      <td><span class="badge">${p.category}</span></td>
+      <td style="color:var(--primary);font-weight:800">₺${p.price}</td>
+      <td>
+        <button class="btn btn-gold" style="padding:6px 12px;font-size:0.85rem;margin-right:5px" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&#39;")})'>Düzenle</button>
+        <button class="btn btn-danger" style="padding:6px 12px;font-size:0.85rem" onclick="deleteProduct(${p.id})">Sil</button>
+      </td>
+    </tr>
+  `).join('');
+
+  // Tables
+  document.getElementById('tableCountInput').value = STATE.tables;
+
+  // Orders
+  const ordTbl = document.getElementById('ordersTable');
+  if(STATE.orders.length===0) ordTbl.innerHTML = `<tr><td colspan="5" style="font-weight:600;color:var(--muted)">Kayıtlı sipariş yok.</td></tr>`;
+  else {
+    ordTbl.innerHTML = STATE.orders.map(o => {
+      let t = o.items.reduce((sum, i)=>sum+(i.price||0)*i.quantity,0);
+      let s = o.status==='new' ? 'YENİ' : (o.status==='prep' ? 'HAZIRLANIYOR' : (o.status==='ready' ? 'HAZIR' : 'TESLİM EDİLDİ'));
+      return `<tr>
+        <td style="font-weight:700">#${o.id.slice(-4)}</td>
+        <td style="font-weight:600">Masa ${o.table}</td>
+        <td><span class="badge">${s}</span></td>
+        <td style="color:var(--primary);font-weight:800">₺${t.toFixed(2)}</td>
+        <td><button class="btn btn-danger" style="padding:6px 12px;font-size:0.85rem" onclick="deleteOrder('${o.id}')">Sil</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Users
+  const uTbl = document.getElementById('usersTable');
+  uTbl.innerHTML = STATE.users.map(u => `
+    <tr>
+      <td style="font-weight:700">${u.id}</td>
+      <td style="font-weight:600">${u.name}</td>
+      <td><span class="badge">${u.role.toUpperCase()}</span></td>
+      <td><button class="btn btn-danger" style="padding:6px 12px;font-size:0.85rem" onclick="deleteUser(${u.id})">Sil</button></td>
+    </tr>
+  `).join('');
+}
+
+// Category Actions
+function addCategory(){
+  const c = prompt("Yeni kategori adı:");
+  if(c && c.trim()){
+    STATE.categories.push(c.trim());
+    saveGlobalState(STATE);
+    renderAll();
+  }
+}
+function deleteCategory(i){
+  if(confirm("Silmek istediğinize emin misiniz?")){
+    STATE.categories.splice(i,1);
+    saveGlobalState(STATE);
+    renderAll();
+  }
+}
+
+// Product Actions
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    document.getElementById('pImg').value = evt.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function openProductModal(){
+  document.getElementById('prodModalTitle').textContent = "Yeni Ürün Ekle";
+  document.getElementById('pId').value = "";
+  document.getElementById('pName').value = "";
+  document.getElementById('pPrice').value = "";
+  document.getElementById('pDesc').value = "";
+  document.getElementById('pImg').value = "https://loremflickr.com/600/400/food,meal/all";
+  document.getElementById('prodModal').classList.add('active');
+}
+function editProduct(p){
+  document.getElementById('prodModalTitle').textContent = "Ürün Düzenle";
+  document.getElementById('pId').value = p.id;
+  document.getElementById('pName').value = p.name;
+  document.getElementById('pCat').value = p.category;
+  document.getElementById('pPrice').value = p.price;
+  document.getElementById('pDesc').value = p.desc;
+  document.getElementById('pImg').value = p.img;
+  document.getElementById('prodModal').classList.add('active');
+}
+function saveProduct(){
+  const id = document.getElementById('pId').value;
+  const p = {
+    id: id ? parseInt(id) : Date.now(),
+    name: document.getElementById('pName').value,
+    category: document.getElementById('pCat').value,
+    price: parseFloat(document.getElementById('pPrice').value),
+    desc: document.getElementById('pDesc').value,
+    img: document.getElementById('pImg').value
+  };
+  
+  if(id){
+    const idx = STATE.products.findIndex(x => x.id == id);
+    if(idx>-1) STATE.products[idx] = p;
+  } else {
+    STATE.products.push(p);
+  }
+  
+  saveGlobalState(STATE);
+  document.getElementById('prodModal').classList.remove('active');
+  renderAll();
+}
+function deleteProduct(id){
+  if(confirm("Silmek istediğinize emin misiniz?")){
+    STATE.products = STATE.products.filter(p=>p.id != id);
+    saveGlobalState(STATE);
+    renderAll();
+  }
+}
+
+// Table actions
+function saveTableCount(){
+  const v = parseInt(document.getElementById('tableCountInput').value);
+  if(v > 0){
+    STATE.tables = v;
+    saveGlobalState(STATE);
+    alert("Masa kapasitesi güncellendi!");
+  }
+}
+
+// Order Actions
+function deleteOrder(id){
+  if(confirm("Siparişi silmek istiyor musunuz?")){
+    STATE.orders = STATE.orders.filter(o => o.id !== id);
+    saveGlobalState(STATE);
+    renderAll();
+  }
+}
+function clearOrders(){
+  if(confirm("Tüm geçmişi silmek istediğinize emin misiniz? (Bu işlem geri alınamaz)")){
+    STATE.orders = [];
+    saveGlobalState(STATE);
+    renderAll();
+  }
+}
+
+// User Actions
+function addUser(){
+  const name = prompt("Kullanıcı adı:");
+  if(name && name.trim()){
+    STATE.users.push({id: Date.now(), name: name.trim(), role: 'personel'});
+    saveGlobalState(STATE);
+    renderAll();
+  }
+}
+function deleteUser(id){
+  if(id === 1) return alert("Sistem yöneticisi silinemez!");
+  if(confirm("Kullanıcıyı silmek istiyor musunuz?")){
+    STATE.users = STATE.users.filter(u => u.id !== id);
+    saveGlobalState(STATE);
+    renderAll();
+  }
+}
+
+function initChart(){
+  const ctx = document.getElementById('revChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'],
+      datasets: [{
+        label: 'Sipariş Trafiği',
+        data: [15, 25, 20, 45, 60, 80, 50],
+        borderColor: '#B8860B',
+        backgroundColor: 'rgba(184, 134, 11, 0.1)',
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { 
+        y: { grid: { color: 'rgba(138, 100, 18, 0.2)' }, ticks: { color: '#5C4305', font:{family:'Poppins', weight:'600'} } }, 
+        x: { grid: { display: false }, ticks: { color: '#5C4305', font:{family:'Poppins', weight:'600'} } } 
+      }
+    }
+  });
+}
+
+BC.onmessage = (e) => {
+  if(e.data.type === 'STATE_UPDATED') renderAll();
+};
+
+init();
+</script>
+</body>
+</html>

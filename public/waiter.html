@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Garson Paneli</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+        :root {
+    --bg-gradient: #0F172A;
+    --surface: #1E293B;
+    --surface-solid: #1E293B;
+    --border: #334155;
+    --primary: #F59E0B;
+    --primary-hover: #D97706;
+    --primary-light: rgba(245, 158, 11, 0.15);
+    --text: #F8FAFC;
+    --muted: #94A3B8;
+    --radius: 16px;
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    --gold-glow: 0 0 20px rgba(245, 158, 11, 0.2);
+    --secondary: #3B82F6;
+    --success: #10B981;
+    --warning: #EF4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Poppins',sans-serif;background:var(--bg-gradient);background-attachment:fixed;color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+  header{background:rgba(15, 23, 42, 0.85);backdrop-filter:blur(15px);border-bottom:1px solid var(--border);padding:15px 30px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 5px 20px rgba(92,67,5,0.15);z-index:10}
+  .header-left{display:flex;align-items:center;gap:20px}
+  .back-btn{text-decoration:none;color:var(--primary);font-weight:600;font-size:0.9rem;transition:all 0.2s;display:flex;align-items:center;gap:5px;background:var(--primary-light);padding:6px 12px;border-radius:8px}
+  .back-btn:hover{background:var(--primary);color:#0F172A; font-weight:700;}
+  .logo{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:700;color:var(--primary);text-decoration:none;letter-spacing:1px}
+  
+  .stats{display:flex;gap:15px}
+  .stat-badge{background:var(--surface-solid);padding:8px 16px;border-radius:16px;font-size:0.9rem;font-weight:700;color:var(--primary);border:1px solid var(--border);box-shadow:0 4px 10px rgba(92,67,5,0.1)}
+
+  .main{display:flex;flex:1;overflow:hidden}
+  
+  .grid-section{flex:1;padding:30px;overflow-y:auto}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:20px}
+  
+  .table-card{background:var(--surface-solid);border:1px solid var(--border);border-radius:var(--radius);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);position:relative;box-shadow:0 8px 20px rgba(92,67,5,0.15)}
+  .table-number{font-family:'Poppins',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);transition:color 0.3s}
+  .table-status{font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:10px;transition:color 0.3s}
+
+  .table-card:hover{transform:translateY(-5px);box-shadow:0 15px 35px rgba(92,67,5,0.3);border-color:var(--primary)}
+  .table-card.active-panel{box-shadow:0 0 0 3px var(--primary)}
+
+  /* STATUSES */
+  .table-card.calling{background:var(--primary);border-color:#B8860B;animation:pulseCall 2s infinite}
+  @keyframes pulseCall { 0%{box-shadow:0 0 0 0 rgba(223,177,62,0.6)} 70%{box-shadow:0 0 0 15px rgba(223,177,62,0)} 100%{box-shadow:0 0 0 0 rgba(223,177,62,0)} }
+  .table-card.calling .table-number, .table-card.calling .table-status{color:#0F172A; font-weight:700;;text-shadow:0 2px 4px rgba(92,67,5,0.4)}
+  
+  .table-card.has-order{border-color:var(--secondary);background:var(--surface-solid)}
+  .table-card.has-order .table-status{color:var(--secondary)}
+
+  .table-card.ready{background:var(--surface-solid);border-color:#4caf7d}
+  .table-card.ready .table-status{color:#4caf7d}
+
+  /* SIDE PANEL */
+  .panel{width:420px;background:var(--surface-solid);border-left:1px solid var(--border);display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);position:absolute;right:0;top:0;bottom:0;z-index:100;box-shadow:-10px 0 40px rgba(92,67,5,0.3)}
+  .panel.open{transform:translateX(0)}
+  @media(min-width:1100px){ .panel{position:static;display:none;box-shadow:none} .panel.open{display:flex} }
+
+  .panel-header{padding:25px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--primary-light)}
+  .panel-title{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:var(--primary)}
+  .close-btn{background:var(--surface-solid);border:1px solid var(--border);width:36px;height:36px;border-radius:50%;color:var(--primary);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;font-weight:700}
+  .close-btn:hover{background:var(--primary);color:#0F172A; font-weight:700;}
+
+  .panel-body{flex:1;overflow-y:auto;padding:25px;display:flex;flex-direction:column;gap:20px}
+  
+  .call-alert{background:var(--primary);color:#0F172A; font-weight:700;;padding:20px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 20px rgba(184,134,11,0.3)}
+  .btn-sm{background:#0F172A;color:var(--primary);border:none;padding:10px 16px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:700;font-size:0.9rem;border-radius:8px;transition:all 0.3s;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
+  .btn-sm:hover{background:var(--surface-solid);transform:translateY(-2px)}
+
+  .order-card{background:var(--surface-solid);border:1px solid var(--border);padding:20px;border-radius:16px;box-shadow:0 5px 15px rgba(92,67,5,0.1)}
+  .order-header{display:flex;justify-content:space-between;margin-bottom:15px;font-size:0.9rem;color:var(--muted);font-weight:700;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .item-row{display:flex;justify-content:space-between;margin-bottom:8px;font-size:1rem;font-weight:600;color:var(--text)}
+  .item-note{font-size:0.9rem;color:var(--primary);margin-left:20px;margin-bottom:10px;font-style:italic;font-weight:500}
+
+  .panel-footer{padding:25px;border-top:1px solid var(--border);background:var(--primary-light)}
+  .btn-full{width:100%;padding:16px;background:var(--surface-solid);color:var(--primary);border:1px solid var(--primary);cursor:pointer;font-family:'Poppins',sans-serif;font-weight:700;font-size:1.05rem;border-radius:12px;transition:all 0.3s;text-transform:uppercase;letter-spacing:1px;box-shadow:0 4px 10px rgba(92,67,5,0.1)}
+  .btn-full:hover{background:var(--primary);color:#0F172A; font-weight:700;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a href="/" class="back-btn">← Ana Sayfa</a>
+    <div class="logo">🛎️ Garson Paneli</div>
+  </div>
+  <div class="stats">
+    <div class="stat-badge"><span id="cCount">0</span> Çağrı</div>
+    <div class="stat-badge"><span id="oCount">0</span> Sipariş</div>
+  </div>
+</header>
+
+<div class="main">
+  <div class="grid-section">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="panel" id="panel">
+    <div class="panel-header">
+      <div class="panel-title" id="pTitle">Masa Detayı</div>
+      <button class="close-btn" onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-body" id="pBody"></div>
+    <div class="panel-footer" id="pFoot"></div>
+  </div>
+</div>
+
+<script src="/state.js"></script>
+<script>
+let activeTable = null;
+let STATE = getGlobalState();
+
+function init(){
+  render();
+}
+
+function render(){
+  STATE = getGlobalState();
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  
+  let calls = Object.keys(STATE.calls).length;
+  let orders = STATE.orders.filter(o => o.status !== 'served').length;
+  document.getElementById('cCount').textContent = calls;
+  document.getElementById('oCount').textContent = orders;
+
+  for(let i=1; i<=STATE.tables; i++){
+    const card = document.createElement('div');
+    let classes = ['table-card'];
+    let status = 'Boş';
+
+    if(i === activeTable) classes.push('active-panel');
+
+    if(STATE.calls[i]){
+      classes.push('calling');
+      status = 'ÇAĞRI';
+    } else {
+      const tableOrders = STATE.orders.filter(o => o.table == i && o.status !== 'served');
+      if(tableOrders.length > 0){
+        if(tableOrders.some(o => o.status === 'ready')){
+          classes.push('ready');
+          status = 'HAZIR';
+        } else {
+          classes.push('has-order');
+          status = 'SİPARİŞ';
+        }
+      }
+    }
+
+    card.className = classes.join(' ');
+    card.onclick = () => openPanel(i);
+    card.innerHTML = `<div class="table-number">${i}</div><div class="table-status">${status}</div>`;
+    grid.appendChild(card);
+  }
+
+  if(activeTable) updatePanel();
+}
+
+function openPanel(t){
+  activeTable = t;
+  document.getElementById('panel').classList.add('open');
+  render();
+}
+function closePanel(){
+  activeTable = null;
+  document.getElementById('panel').classList.remove('open');
+  render();
+}
+
+function updatePanel(){
+  STATE = getGlobalState();
+  const t = activeTable;
+  document.getElementById('pTitle').textContent = `Masa ${t}`;
+  
+  let html = '';
+  if(STATE.calls[t]){
+    html += `
+      <div class="call-alert">
+        <div>
+          <strong style="font-size:1.1rem;display:block">Garson Çağrısı</strong>
+          <span style="font-size:0.85rem;opacity:0.9">Müşteri yardıma ihtiyaç duyuyor</span>
+        </div>
+        <button class="btn-sm" onclick="resolveCall(${t})">İlgilenildi</button>
+      </div>
+    `;
+  }
+
+  const tableOrders = STATE.orders.filter(o => o.table == t && o.status !== 'served');
+  if(tableOrders.length > 0){
+    tableOrders.forEach(o => {
+      let items = o.items.map(i => `
+        <div class="item-row"><span><strong style="color:var(--primary)">${i.quantity}x</strong> ${i.name}</span></div>
+        ${i.note ? `<div class="item-note">✍️ ${i.note}</div>` : ''}
+      `).join('');
+      
+      let statusStr = o.status === 'ready' ? `<span style="color:#4caf7d">SERVİSE HAZIR</span>` : `<span style="color:var(--secondary)">HAZIRLANIYOR</span>`;
+      let actionBtn = o.status === 'ready' ? `<button class="btn-full" style="margin-top:15px;background:var(--success);color:#FFF;border:none" onclick="serveOrder('${o.id}')">Teslim Edildi İşaretle</button>` : '';
+
+      html += `
+        <div class="order-card" style="${o.status==='ready' ? 'border-left:5px solid var(--success)' : 'border-left:5px solid var(--secondary)'}">
+          <div class="order-header"><span>Sipariş #${o.id.slice(-4)}</span>${statusStr}</div>
+          ${items}
+          ${actionBtn}
+        </div>
+      `;
+    });
+  }
+
+  if(!STATE.calls[t] && tableOrders.length === 0){
+    html = `<div style="text-align:center;color:var(--muted);margin-top:60px;display:flex;flex-direction:column;align-items:center;gap:15px">
+              <span style="font-size:3.5rem;opacity:0.8;color:var(--primary)">🍽️</span>
+              <span style="font-weight:600">Bekleyen işlem veya sipariş yok.</span>
+            </div>`;
+    document.getElementById('pFoot').innerHTML = '';
+  } else {
+    document.getElementById('pFoot').innerHTML = `<button class="btn-full" onclick="clearTable(${t})">Masayı Tamamen Temizle</button>`;
+  }
+
+  document.getElementById('pBody').innerHTML = html;
+}
+
+function resolveCall(t){
+  STATE = getGlobalState();
+  delete STATE.calls[t];
+  saveGlobalState(STATE);
+  render();
+}
+function serveOrder(id){
+  STATE = getGlobalState();
+  const o = STATE.orders.find(x => x.id === id);
+  if(o) o.status = 'served';
+  saveGlobalState(STATE);
+  render();
+}
+function clearTable(t){
+  STATE = getGlobalState();
+  delete STATE.calls[t];
+  STATE.orders = STATE.orders.map(o => o.table == t ? {...o, status:'served'} : o);
+  saveGlobalState(STATE);
+  closePanel();
+}
+
+BC.onmessage = (e) => {
+  if(e.data.type === 'STATE_UPDATED') render();
+};
+
+init();
+</script>
+</body>
+</html>

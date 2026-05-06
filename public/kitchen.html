@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Profesyonel Mutfak KDS</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+        :root {
+    --bg-gradient: #0F172A;
+    --surface: #1E293B;
+    --surface-solid: #1E293B;
+    --border: #334155;
+    --primary: #F59E0B;
+    --primary-hover: #D97706;
+    --primary-light: rgba(245, 158, 11, 0.15);
+    --text: #F8FAFC;
+    --muted: #94A3B8;
+    --radius: 16px;
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    --gold-glow: 0 0 20px rgba(245, 158, 11, 0.2);
+    --secondary: #3B82F6;
+    --success: #10B981;
+    --warning: #EF4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Poppins',sans-serif;background:var(--bg-gradient);background-attachment:fixed;color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+  header{background:rgba(15, 23, 42, 0.85);backdrop-filter:blur(15px);border-bottom:1px solid var(--border);padding:15px 30px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 5px 20px rgba(92,67,5,0.15);z-index:10}
+  .header-left{display:flex;align-items:center;gap:20px}
+  .back-btn{text-decoration:none;color:var(--primary);font-weight:600;font-size:0.9rem;transition:all 0.2s;display:flex;align-items:center;gap:5px;background:var(--primary-light);padding:6px 12px;border-radius:8px}
+  .back-btn:hover{background:var(--primary);color:#0F172A; font-weight:700;}
+  .logo{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:var(--primary);text-decoration:none;letter-spacing:1px}
+  .clock{font-size:1.4rem;font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums;background:var(--primary-light);padding:6px 16px;border-radius:12px;border:1px solid var(--border)}
+
+  .board{flex:1;display:flex;gap:30px;padding:30px;overflow-x:auto}
+  
+  .column{flex:1;min-width:380px;background:rgba(15, 23, 42, 0.85);backdrop-filter:blur(10px);border-radius:16px;display:flex;flex-direction:column;padding:10px;border:1px solid var(--border);box-shadow:var(--shadow)}
+  .col-header{padding:15px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;border-bottom:2px solid var(--border)}
+  .col-title{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--primary);letter-spacing:1px}
+  .col-count{background:var(--primary);color:#0F172A; font-weight:700;;padding:4px 14px;border-radius:16px;font-size:0.95rem;font-weight:800;box-shadow:0 4px 10px rgba(138,100,18,0.3)}
+  
+  .col-content{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:15px;padding:5px}
+
+  .ticket{background:var(--surface-solid);border-radius:16px;padding:25px;position:relative;box-shadow:0 5px 15px rgba(92,67,5,0.1);transition:transform 0.2s;border:1px solid var(--border);border-left:6px solid var(--primary)}
+  .ticket:hover{transform:translateY(-4px);box-shadow:0 15px 30px rgba(92,67,5,0.2)}
+
+  .ticket-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid var(--border)}
+  .ticket-table{font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:10px}
+  .ticket-table::before{content:'Masa';font-family:'Poppins',sans-serif;font-size:0.9rem;font-weight:700;color:var(--primary);text-transform:uppercase}
+  .ticket-time{font-size:1.1rem;font-weight:800;font-variant-numeric:tabular-nums;background:var(--primary-light);padding:6px 12px;border-radius:8px;color:var(--primary)}
+  .ticket-time.warning{background:rgba(229,143,101,0.2);color:#B22222}
+  .ticket-time.danger{background:rgba(178,34,34,0.15);color:var(--warning);animation:pulse 1.5s infinite}
+
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+  .item-list{display:flex;flex-direction:column;gap:12px;margin-bottom:25px}
+  .item{display:flex;justify-content:space-between;align-items:flex-start;font-size:1.1rem;font-weight:700;color:var(--text)}
+  .qty{background:var(--primary);padding:4px 12px;border-radius:8px;font-weight:800;color:#0F172A; font-weight:700;;margin-right:12px;font-size:1rem;box-shadow:0 2px 5px rgba(138,100,18,0.3)}
+  .item-name{flex:1;line-height:1.4}
+  .item-note{font-size:0.9rem;color:var(--primary);margin-top:6px;background:var(--primary-light);padding:8px 12px;border-radius:8px;display:inline-block;width:fit-content;border:1px solid var(--border);font-weight:600}
+
+  .ticket-action{width:100%;padding:16px;border-radius:12px;border:none;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:800;font-size:1.05rem;transition:all 0.3s;text-transform:uppercase;letter-spacing:1px;box-shadow:0 5px 15px rgba(92,67,5,0.15)}
+  .btn-start{background:var(--primary);color:#0F172A; font-weight:700;}
+  .btn-start:hover{background:var(--primary-hover);transform:translateY(-2px)}
+  .btn-ready{background:var(--success);color:#FFF}
+  .btn-ready:hover{background:var(--success);transform:translateY(-2px)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a href="/" class="back-btn">← Ana Sayfa</a>
+    <div class="logo">👨‍🍳 Mutfak KDS</div>
+  </div>
+  <div class="clock" id="clock">00:00:00</div>
+</header>
+
+<div class="board">
+  <div class="column">
+    <div class="col-header">
+      <div class="col-title">Yeni Gelenler</div>
+      <div class="col-count" id="cNew">0</div>
+    </div>
+    <div class="col-content" id="colNew"></div>
+  </div>
+
+  <div class="column">
+    <div class="col-header">
+      <div class="col-title" style="color:var(--secondary)">Hazırlananlar</div>
+      <div class="col-count" style="background:var(--secondary);color:#FFF" id="cPrep">0</div>
+    </div>
+    <div class="col-content" id="colPrep"></div>
+  </div>
+</div>
+
+<script src="/state.js"></script>
+<script>
+let STATE = getGlobalState();
+
+setInterval(() => {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('tr-TR');
+  updateTimers();
+}, 1000);
+
+function init(){
+  render();
+}
+
+function render(){
+  STATE = getGlobalState();
+  
+  const colNew = document.getElementById('colNew');
+  const colPrep = document.getElementById('colPrep');
+  colNew.innerHTML = ''; colPrep.innerHTML = '';
+  
+  let newC = 0; let prepC = 0;
+
+  STATE.orders.forEach(o => {
+    if(o.status === 'new' || o.status === 'prep'){
+      if(o.status === 'new') newC++;
+      if(o.status === 'prep') prepC++;
+      
+      let items = o.items.map(i => `
+        <div style="display:flex;flex-direction:column">
+          <div class="item">
+            <span class="qty">${i.quantity}x</span>
+            <span class="item-name">${i.name}</span>
+          </div>
+          ${i.note ? `<div class="item-note">Özel İstek: ${i.note}</div>` : ''}
+        </div>
+      `).join('');
+
+      let btn = o.status === 'new' ? 
+        `<button class="ticket-action btn-start" onclick="changeStatus('${o.id}', 'prep')">Hazırlamaya Başla</button>` : 
+        `<button class="ticket-action btn-ready" onclick="changeStatus('${o.id}', 'ready')">Teslime Hazır İşaretle</button>`;
+
+      let borderColor = o.status === 'new' ? 'var(--primary)' : 'var(--secondary)';
+
+      let html = `
+        <div class="ticket" style="border-left-color:${borderColor}">
+          <div class="ticket-header">
+            <div class="ticket-table">${o.table}</div>
+            <div class="ticket-time" id="time-${o.id}" data-ts="${o.timestamp}">00:00</div>
+          </div>
+          <div class="item-list">${items}</div>
+          ${btn}
+        </div>
+      `;
+
+      if(o.status === 'new') colNew.insertAdjacentHTML('beforeend', html);
+      else colPrep.insertAdjacentHTML('beforeend', html);
+    }
+  });
+
+  document.getElementById('cNew').textContent = newC;
+  document.getElementById('cPrep').textContent = prepC;
+  updateTimers();
+}
+
+function updateTimers(){
+  document.querySelectorAll('.ticket-time').forEach(el => {
+    const ts = parseInt(el.getAttribute('data-ts'));
+    const diff = Math.floor((Date.now() - ts) / 1000);
+    const m = Math.floor(diff / 60).toString().padStart(2,'0');
+    const s = (diff % 60).toString().padStart(2,'0');
+    el.textContent = `${m}:${s}`;
+    
+    el.className = 'ticket-time';
+    if(diff > 900) el.classList.add('danger'); // 15 min
+    else if(diff > 600) el.classList.add('warning'); // 10 min
+  });
+}
+
+function changeStatus(id, newStatus){
+  STATE = getGlobalState();
+  const o = STATE.orders.find(x => x.id === id);
+  if(o) o.status = newStatus;
+  saveGlobalState(STATE);
+  render();
+}
+
+BC.onmessage = (e) => {
+  if(e.data.type === 'STATE_UPDATED') render();
+};
+
+init();
+</script>
+</body>
+</html>

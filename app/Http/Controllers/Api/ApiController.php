@@ -1,0 +1,159 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Menu;
+use App\Models\Order;
+use App\Models\OrderItem;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+
+/**
+ * ApiController
+ *
+ * Stateless JSON API for the mobile application.
+ * No session usage — cart management is handled client-side.
+ */
+class ApiController extends Controller
+{
+    /**
+     * GET /api/categories
+     * Returns all categories with their menu items.
+     */
+    public function categories(): JsonResponse
+    {
+        $categories = Category::with('menus')->get()->map(function ($cat) {
+            return [
+                'id'    => $cat->id,
+                'name'  => $cat->name,
+                'items' => $cat->menus->map(fn($m) => [
+                    'id'    => $m->id,
+                    'name'  => $m->name,
+                    'price' => (float) $m->price,
+                ]),
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data'    => $categories,
+        ]);
+    }
+
+    /**
+     * GET /api/menu
+     * Returns all menu items as a flat list.
+     */
+    public function menu(): JsonResponse
+    {
+        $items = Menu::with('category')->get()->map(fn($m) => [
+            'id'       => $m->id,
+            'name'     => $m->name,
+            'price'    => (float) $m->price,
+            'category' => $m->category?->name,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $items,
+        ]);
+    }
+
+    /**
+     * GET /api/orders
+     * Returns all orders with their items.
+     */
+    public function listOrders(): JsonResponse
+    {
+        $orders = Order::with('items')->latest()->get()->map(fn($o) => [
+            'id'         => $o->id,
+            'total'      => (float) $o->total,
+            'created_at' => $o->created_at?->toIso8601String(),
+            'items'      => $o->items->map(fn($i) => [
+                'name'     => $i->name,
+                'price'    => (float) $i->price,
+                'quantity' => $i->quantity,
+            ]),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $orders,
+        ]);
+    }
+
+    /**
+     * GET /api/orders/{id}
+     * Returns a single order with its items.
+     */
+    public function showOrder(int $id): JsonResponse
+    {
+        $order = Order::with('items')->find($id);
+
+        if (! $order) {
+            return response()->json(['success' => false, 'message' => 'Sipariş bulunamadı.'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'id'         => $order->id,
+                'total'      => (float) $order->total,
+                'created_at' => $order->created_at?->toIso8601String(),
+                'items'      => $order->items->map(fn($i) => [
+                    'name'     => $i->name,
+                    'price'    => (float) $i->price,
+                    'quantity' => $i->quantity,
+                ]),
+            ],
+        ]);
+    }
+
+    /**
+     * POST /api/orders
+     * Creates a new order from a JSON body.
+     *
+     * Expected body:
+     * {
+     *   "items": [
+     *     { "name": "Köfte", "price": 75.00, "quantity": 2 },
+     *     ...
+     *   ]
+     * }
+     */
+    public function createOrder(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'items'              => 'required|array|min:1',
+            'items.*.name'       => 'required|string|max:255',
+            'items.*.price'      => 'required|numeric|min:0',
+            'items.*.quantity'   => 'required|integer|min:1',
+        ]);
+
+        $total = collect($validated['items'])->sum(
+            fn($i) => $i['price'] * $i['quantity']
+        );
+
+        $order = Order::create(['total' => $total]);
+
+        foreach ($validated['items'] as $item) {
+            OrderItem::create([
+                'order_id' => $order->id,
+                'name'     => $item['name'],
+                'price'    => $item['price'],
+                'quantity' => $item['quantity'],
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sipariş başarıyla oluşturuldu.',
+            'data'    => [
+                'order_id' => $order->id,
+                'total'    => (float) $total,
+            ],
+        ], 201);
+    }
+}
