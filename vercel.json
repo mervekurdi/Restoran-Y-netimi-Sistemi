@@ -12,12 +12,32 @@
     ],
     "routes": [
         {
-            "src": "/build/(.*)",
-            "dest": "/public/build/$1"
+            "src": "/admin",
+            "dest": "/public/admin.html"
         },
         {
-            "src": "/(css|js|images|storage|favicon.ico)/(.*)",
-            "dest": "/public/$1/$2"
+            "src": "/customer",
+            "dest": "/public/customer.html"
+        },
+        {
+            "src": "/waiter",
+            "dest": "/public/waiter.html"
+        },
+        {
+            "src": "/kitchen",
+            "dest": "/public/kitchen.html"
+        },
+        {
+            "src": "/state.js",
+            "dest": "/public/state.js"
+        },
+        {
+            "src": "/favicon.ico",
+            "dest": "/public/favicon.ico"
+        },
+        {
+            "src": "/(.*\.(css|js|ico|png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot))",
+            "dest": "/public/$1"
         },
         {
             "src": "/(.*)",
