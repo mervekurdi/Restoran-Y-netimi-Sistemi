@@ -1,6 +1,9 @@
 <?php
 $appDirectory = __DIR__ . '/..';
 
+// Fix for Laravel routing on Vercel
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+
 $tempDir = '/tmp';
 
 // Set environment variables to move Laravel storage to /tmp
