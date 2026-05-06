@@ -46,7 +46,7 @@ return [
 
         'mongodb' => [
             'driver' => 'mongodb',
-            'dsn' => env('DB_URI', 'mongodb+srv://user:pass@cluster0.mongodb.net/?retryWrites=true&w=majority'),
+            'dsn' => env('MONGODB_URI', env('DB_URI')),
             'database' => env('DB_DATABASE', 'restoran'),
         ],
 
