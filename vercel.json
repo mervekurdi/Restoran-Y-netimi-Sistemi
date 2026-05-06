@@ -1,5 +1,4 @@
 {
-    "version": 2,
     "builds": [
         {
             "src": "api/index.php",
@@ -28,15 +27,15 @@
             "dest": "/public/kitchen.html"
         },
         {
-            "src": "/state.js",
+            "src": "/state\\.js",
             "dest": "/public/state.js"
         },
         {
-            "src": "/favicon.ico",
+            "src": "/favicon\\.ico",
             "dest": "/public/favicon.ico"
         },
         {
-            "src": "/(.*\.(css|js|ico|png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot))",
+            "src": "/(.*\\.(?:css|js|ico|png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot))$",
             "dest": "/public/$1"
         },
         {
