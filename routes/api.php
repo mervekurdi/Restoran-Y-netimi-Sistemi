@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\ApiController;
 // Menu & Categories
 Route::get('/categories', [ApiController::class, 'categories']);
 Route::get('/menu',       [ApiController::class, 'menu']);
+Route::post('/sync-state', [ApiController::class, 'syncState']);
+Route::post('/upload-image', [ApiController::class, 'uploadImage']);
 
 // Orders
 Route::get('/orders',     [ApiController::class, 'listOrders']);

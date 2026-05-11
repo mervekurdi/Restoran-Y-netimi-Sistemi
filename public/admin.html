@@ -3,193 +3,441 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Yönetici Paneli (Lüks Altın)</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Admin Paneli | Yönetim Merkezi</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-        :root {
-    --bg-gradient: #0F172A;
-    --surface: #1E293B;
-    --surface-solid: #1E293B;
-    --border: #334155;
-    --primary: #F59E0B;
-    --primary-hover: #D97706;
-    --primary-light: rgba(245, 158, 11, 0.15);
-    --text: #F8FAFC;
-    --muted: #94A3B8;
-    --radius: 16px;
-    --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-    --gold-glow: 0 0 20px rgba(245, 158, 11, 0.2);
-    --secondary: #3B82F6;
-    --success: #10B981;
-    --warning: #EF4444;
+  :root {
+    --bg-color: #0A0A0A;
+    --surface: #1C1C1E;
+    --border: #2C2C2E;
+    --gold: #D4AF37;
+    --gold-hover: #B8860B;
+    --gold-light: rgba(212, 175, 55, 0.1);
+    --text: #FFFFFF;
+    --muted: #8E8E93;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    
+    /* Mobile Icon Colors */
+    --c-revenue: #D4AF37;
+    --c-active: #3B82F6;
+    --c-tables: #EF4444;
+    --c-products: #10B981;
+    --c-categories: #A855F7;
+    --c-total: #D4AF37;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Poppins',sans-serif;background:var(--bg-gradient);background-attachment:fixed;color:var(--text);display:flex;height:100vh;overflow:hidden}
 
-  .sidebar{width:280px;background:var(--surface-solid);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;box-shadow:5px 0 20px rgba(92,67,5,0.15);z-index:10}
-  .brand{padding:30px;font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:15px;border-bottom:1px solid var(--border)}
-  .brand a{text-decoration:none;color:inherit;display:flex;align-items:center;gap:10px}
-  
-  .nav-menu{padding:30px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
-  .nav-item{padding:14px 20px;border-radius:12px;color:var(--muted);text-decoration:none;font-weight:600;font-size:1rem;cursor:pointer;transition:all 0.3s;border:1px solid transparent}
-  .nav-item:hover{color:var(--primary);background:var(--primary-light)}
-  .nav-item.active{background:var(--primary-light);color:var(--primary);border-color:var(--border);box-shadow:0 4px 10px rgba(138,100,18,0.2)}
-  
-  .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:rgba(255, 255, 255, 0.05);backdrop-filter:blur(10px)}
-  .header{height:85px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;border-bottom:1px solid rgba(255, 255, 255, 0.08);background:rgba(15, 23, 42, 0.7)}
-  .page-title{font-family:'Poppins',sans-serif;font-size:2rem;font-weight:800;color:var(--primary);text-shadow:0 1px 2px rgba(255,255,255,0.8)}
-  .back-btn{text-decoration:none;background:var(--surface-solid);padding:10px 20px;border-radius:12px;color:var(--primary);font-weight:700;font-size:0.95rem;border:1px solid var(--border);box-shadow:0 4px 10px rgba(92,67,5,0.15);transition:all 0.3s}
-  .back-btn:hover{background:var(--primary);color:#0F172A; font-weight:700;;border-color:var(--primary)}
-  
-  .content-scroll{flex:1;overflow-y:auto;padding:40px}
-  .tab-pane{display:none}
-  .tab-pane.active{display:block}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { 
+    font-family: 'Poppins', sans-serif; 
+    background: var(--bg-color); 
+    color: var(--text); 
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:30px;margin-bottom:40px}
-  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:30px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
-  .stat-label{font-size:0.95rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px}
-  .stat-value{font-family:'Poppins',sans-serif;font-size:3rem;font-weight:800;color:var(--primary);text-shadow:0 2px 4px rgba(92,67,5,0.1)}
+  /* Header Design */
+  .header {
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
 
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:40px;box-shadow:var(--shadow)}
-  .card-header{padding:25px 30px;border-bottom:1px solid var(--border);font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:800;color:var(--primary);display:flex;justify-content:space-between;align-items:center}
-  .card-body{padding:30px}
-  
-  table{width:100%;border-collapse:collapse}
-  th{text-align:left;padding:15px 30px;color:var(--primary);border-bottom:2px solid var(--border);font-weight:700;font-size:0.95rem;background:var(--primary-light);text-transform:uppercase}
-  td{padding:20px 30px;border-bottom:1px solid var(--border);color:var(--text);font-weight:500;font-size:0.95rem}
-  tr:last-child td{border-bottom:none}
-  
-  .btn{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:700;transition:all 0.2s;box-shadow:0 4px 10px rgba(92,67,5,0.1)}
-  .btn-gold{background:var(--primary);color:#0F172A; font-weight:700;}
-  .btn-gold:hover{background:var(--primary-hover);transform:translateY(-2px)}
-  .btn-danger{background:var(--warning);color:#FFF}
-  .btn-danger:hover{background:#B22222;transform:translateY(-2px)}
+  .back-circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .back-circle:hover { background: var(--gold-light); border-color: var(--gold); }
+  .back-circle svg { width: 20px; height: 20px; stroke: #10B981; stroke-width: 2.5; }
 
-  .form-group{margin-bottom:20px}
-  .form-group label{display:block;margin-bottom:8px;color:var(--muted);font-weight:600;font-size:0.95rem}
-  .form-control{width:100%;padding:14px 16px;background:rgba(255, 255, 255, 0.05);border:2px solid var(--border);color:var(--text);border-radius:12px;font-family:'Poppins',sans-serif;font-weight:500}
-  .form-control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 10px rgba(138,100,18,0.2)}
+  .header-content {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .header-title svg { width: 28px; height: 28px; color: #3B82F6; }
+  .header-subtitle {
+    color: #10B981;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  /* Navigation Tabs */
+  .nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+  .nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 10px;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    border-bottom: 3px solid transparent;
+  }
+  .nav-tab svg { width: 20px; height: 20px; opacity: 0.7; }
+  .nav-tab:hover { color: var(--gold); }
+  .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .nav-tab.active svg { opacity: 1; }
+
+  /* Main Content */
+  .container {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 40px;
+    padding-bottom: 100px;
+  }
+
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: var(--muted);
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.3s;
+  }
+  .stat-card:hover { border-color: rgba(212, 175, 55, 0.3); transform: translateY(-5px); }
+  
+  .stat-icon-wrapper {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .stat-icon-wrapper svg { width: 24px; height: 24px; }
+
+  .stat-info { display: flex; flex-direction: column; gap: 4px; }
+  .stat-value { font-size: 2.2rem; font-weight: 800; }
+  .stat-label { color: var(--muted); font-size: 0.95rem; font-weight: 600; }
+
+  /* Card Lists (Mobile Style) */
+  .card-list { display: flex; flex-direction: column; gap: 15px; }
+  .item-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s;
+  }
+  .item-card:hover { border-color: var(--gold); }
+  
+  .item-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+  }
+  .item-img {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    object-fit: cover;
+  }
+
+  .item-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .item-name { font-size: 1.15rem; font-weight: 700; color: #FFF; }
+  .item-sub { font-size: 0.9rem; color: var(--muted); font-weight: 500; }
+  
+  .item-price { font-size: 1.2rem; font-weight: 800; color: var(--gold); margin-right: 20px; }
+
+  .item-actions { display: flex; gap: 10px; }
+  .action-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+  }
+  .action-btn svg { width: 18px; height: 18px; }
+  .btn-edit { background: rgba(212, 175, 55, 0.1); color: var(--gold); border-color: rgba(212, 175, 55, 0.2); }
+  .btn-edit:hover { background: var(--gold); color: #000; }
+  .btn-delete { background: rgba(239, 68, 68, 0.1); color: #EF4444; border-color: rgba(239, 68, 68, 0.2); }
+  .btn-delete:hover { background: #EF4444; color: #FFF; }
+
+  /* Global Buttons */
+  .btn-main {
+    width: 100%;
+    padding: 16px;
+    background: var(--gold);
+    color: #000;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+  }
+  .btn-main:hover { background: var(--gold-hover); transform: translateY(-2px); }
 
   /* Modal */
-  .modal-overlay{position:fixed;inset:0;background:rgba(42,30,0,0.6);backdrop-filter:blur(5px);z-index:999;display:none;align-items:center;justify-content:center}
-  .modal-overlay.active{display:flex}
-  .modal-content{background:var(--surface-solid);width:500px;border-radius:16px;padding:35px;border:1px solid var(--border);box-shadow:0 25px 50px rgba(92,67,5,0.3)}
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 550px;
+    padding: 40px;
+    position: relative;
+  }
+  .modal-header { font-size: 1.5rem; font-weight: 800; color: var(--gold); margin-bottom: 30px; text-align: center; }
   
-  .badge{padding:6px 12px;border-radius:12px;font-size:0.85rem;background:var(--primary-light);color:var(--primary);border:1px solid var(--border);font-weight:700}
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; color: var(--muted); margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+  .form-control {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    color: #FFF;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s;
+  }
+  .form-control:focus { border-color: var(--gold); background: rgba(255, 255, 255, 0.08); }
+
+  .modal-footer { display: flex; gap: 15px; margin-top: 30px; }
+  .btn-modal { flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; font-size: 1rem; }
+  .btn-save { background: var(--gold); color: #000; }
+  .btn-cancel { background: rgba(255, 255, 255, 0.05); color: #FFF; border: 1px solid var(--border); }
+
+  /* Status Badges */
+  .status-badge {
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    background: var(--gold-light);
+    color: var(--gold);
+  }
+
+  @media (max-width: 1000px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .header { padding: 20px; }
+    .nav-tabs { gap: 15px; }
+    .nav-tab span { display: none; }
+  }
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <div class="brand">👑 Yönetim Paneli</div>
-  <div class="nav-menu">
-    <a class="nav-item active" onclick="switchTab('overview')">📊 Genel Bakış</a>
-    <a class="nav-item" onclick="switchTab('menu')">🍔 Menü & Ürünler</a>
-    <a class="nav-item" onclick="switchTab('tables')">🏢 Masa Yönetimi</a>
-    <a class="nav-item" onclick="switchTab('orders')">🛒 Siparişler</a>
-    <a class="nav-item" onclick="switchTab('users')">👥 Kullanıcılar</a>
+<div class="header">
+  <a href="/" class="back-circle" title="Ana Sayfaya Dön">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  </a>
+  <div class="header-content">
+    <div class="header-title">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+      Admin Paneli
+    </div>
+    <div class="header-subtitle">Yönetim Merkezi</div>
   </div>
 </div>
 
-<div class="main">
-  <div class="header">
-    <div class="page-title" id="pageTitle">Genel Bakış</div>
-    <a href="/" class="back-btn">← Ana Sayfaya Dön</a>
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="switchTab('overview', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 16v-4m4 4V9m4 7V5m4 11V11"/></svg>
+    <span>Özet</span>
   </div>
+  <div class="nav-tab" onclick="switchTab('menu', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span>Kategoriler</span>
+  </div>
+  <div class="nav-tab" onclick="switchTab('products', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    <span>Ürünler</span>
+  </div>
+  <div class="nav-tab" onclick="switchTab('orders', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    <span>Siparişler</span>
+  </div>
+</div>
 
-  <div class="content-scroll">
-    
-    <!-- OVERVIEW TAB -->
-    <div id="overview" class="tab-pane active">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-label">Aktif Toplam Ciro</span>
-          <span class="stat-value" id="totRev">₺0.00</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Toplam Masa Sayısı</span>
-          <span class="stat-value" id="totTable">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Sistemdeki Ürün</span>
-          <span class="stat-value" id="totProd">0</span>
+<div class="container">
+  
+  <!-- OVERVIEW TAB -->
+  <div id="overview" class="tab-pane active">
+    <div class="section-title">Restoran İstatistikleri</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" style="color: var(--c-revenue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M7 15h.01M17 15h.01"/></svg></div>
+        <div class="stat-info">
+          <div class="stat-value" id="totRev">₺0</div>
+          <div class="stat-label">Toplam Ciro</div>
         </div>
       </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" style="color: var(--c-active)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+        <div class="stat-info">
+          <div class="stat-value" id="activeOrders">0</div>
+          <div class="stat-label">Aktif Sipariş</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" style="color: var(--c-tables)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+        <div class="stat-info">
+          <div class="stat-value" id="tableStatus">0/0</div>
+          <div class="stat-label">Dolu Masa</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" style="color: var(--c-products)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
+        <div class="stat-info">
+          <div class="stat-value" id="totProd">0</div>
+          <div class="stat-label">Menü Ürünü</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" style="color: var(--c-categories)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+        <div class="stat-info">
+          <div class="stat-value" id="totCat">0</div>
+          <div class="stat-label">Kategori</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" style="color: var(--c-total)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg></div>
+        <div class="stat-info">
+          <div class="stat-value" id="totOrders">0</div>
+          <div class="stat-label">Toplam Sipariş</div>
+        </div>
+      </div>
+    </div>
 
-      <div class="card">
-        <div class="card-header">Sistem Akışı ve Haftalık Analiz</div>
-        <div class="card-body" style="height:350px">
+    <div class="stats-grid" style="grid-template-columns: 1fr;">
+      <div class="stat-card" style="padding: 40px;">
+        <div class="stat-label" style="margin-bottom: 20px;">Haftalık Sipariş Analizi</div>
+        <div style="height: 350px;">
           <canvas id="revChart"></canvas>
         </div>
       </div>
     </div>
-
-    <!-- MENU TAB -->
-    <div id="menu" class="tab-pane">
-      <div class="card">
-        <div class="card-header">Kategoriler <button class="btn btn-gold" onclick="addCategory()">+ Yeni Kategori</button></div>
-        <div class="card-body">
-          <div id="catList" style="display:flex;gap:15px;flex-wrap:wrap"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">Ürünler <button class="btn btn-gold" onclick="openProductModal()">+ Yeni Ürün Ekle</button></div>
-        <table>
-          <thead><tr><th>Görsel</th><th>Ürün Adı</th><th>Kategori</th><th>Fiyat</th><th>İşlem</th></tr></thead>
-          <tbody id="prodTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- TABLES TAB -->
-    <div id="tables" class="tab-pane">
-      <div class="card" style="max-width:500px">
-        <div class="card-header">Masa Sayısı Yönetimi</div>
-        <div class="card-body">
-          <div class="form-group">
-            <label>Toplam Masa Kapasitesi</label>
-            <input type="number" id="tableCountInput" class="form-control" value="25">
-          </div>
-          <button class="btn btn-gold" onclick="saveTableCount()">Kaydet</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ORDERS TAB -->
-    <div id="orders" class="tab-pane">
-      <div class="card">
-        <div class="card-header">Tüm Sipariş Geçmişi <button class="btn btn-danger" onclick="clearOrders()">Tümünü Temizle</button></div>
-        <table>
-          <thead><tr><th>ID</th><th>Masa</th><th>Durum</th><th>Tutar</th><th>İşlem</th></tr></thead>
-          <tbody id="ordersTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- USERS TAB -->
-    <div id="users" class="tab-pane">
-      <div class="card">
-        <div class="card-header">Sistem Kullanıcıları <button class="btn btn-gold" onclick="addUser()">+ Yeni Kullanıcı</button></div>
-        <table>
-          <thead><tr><th>ID</th><th>Kullanıcı Adı</th><th>Rol</th><th>İşlem</th></tr></thead>
-          <tbody id="usersTable"></tbody>
-        </table>
-      </div>
-    </div>
-
   </div>
+
+  <!-- CATEGORIES TAB -->
+  <div id="menu" class="tab-pane">
+    <button class="btn-main" onclick="addCategory()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Kategori Ekle
+    </button>
+    <div class="card-list" id="catList"></div>
+  </div>
+
+  <!-- PRODUCTS TAB -->
+  <div id="products" class="tab-pane">
+    <button class="btn-main" onclick="openProductModal()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Ürün Ekle
+    </button>
+    <div class="card-list" id="prodList"></div>
+  </div>
+
+  <!-- ORDERS TAB -->
+  <div id="orders" class="tab-pane">
+    <div class="section-title">Aktif ve Geçmiş Siparişler</div>
+    <div class="card-list" id="ordersList"></div>
+  </div>
+
 </div>
 
 <!-- Product Modal -->
 <div class="modal-overlay" id="prodModal">
   <div class="modal-content">
-    <h2 style="color:var(--primary);margin-bottom:20px;font-family:'Playfair Display';font-weight:800" id="prodModalTitle">Ürün Ekle</h2>
+    <div class="modal-header" id="prodModalTitle">Yeni Ürün Ekle</div>
     <input type="hidden" id="pId">
     <div class="form-group">
       <label>Ürün Adı</label>
-      <input type="text" id="pName" class="form-control">
+      <input type="text" id="pName" class="form-control" placeholder="Örn: Klasik Burger">
     </div>
     <div class="form-group">
       <label>Kategori</label>
@@ -197,22 +445,25 @@
     </div>
     <div class="form-group">
       <label>Fiyat (₺)</label>
-      <input type="number" id="pPrice" class="form-control">
+      <input type="number" id="pPrice" class="form-control" placeholder="0.00">
     </div>
     <div class="form-group">
       <label>Açıklama</label>
-      <input type="text" id="pDesc" class="form-control">
+      <input type="text" id="pDesc" class="form-control" placeholder="Ürün içeriği...">
     </div>
     <div class="form-group">
-      <label>Görsel URL veya Dosya Seç</label>
+      <label>Görsel URL</label>
       <div style="display:flex;gap:10px;">
-        <input type="text" id="pImg" class="form-control" placeholder="URL girin veya dosya seçin" style="flex:1;">
-        <input type="file" id="pImageFile" accept="image/*" class="form-control" style="width:auto;cursor:pointer;padding:11px;" onchange="handleImageUpload(event)">
+        <input type="text" id="pImg" class="form-control" placeholder="https://..." style="flex:1;">
+        <input type="file" id="pImageFile" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+        <button class="action-btn" onclick="document.getElementById('pImageFile').click()" style="width:50px;height:50px;border-radius:14px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        </button>
       </div>
     </div>
-    <div style="display:flex;gap:15px;margin-top:30px">
-      <button class="btn btn-gold" style="flex:1;padding:15px;font-size:1.1rem" onclick="saveProduct()">Kaydet</button>
-      <button class="btn btn-danger" style="flex:1;padding:15px;font-size:1.1rem;background:#E58F65;color:#0F172A; font-weight:700;;border:none" onclick="document.getElementById('prodModal').classList.remove('active')">İptal</button>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" onclick="document.getElementById('prodModal').classList.remove('active')">İptal</button>
+      <button class="btn-modal btn-save" onclick="saveProduct()">Kaydet</button>
     </div>
   </div>
 </div>
@@ -221,87 +472,95 @@
 <script>
 let STATE = getGlobalState();
 
-function switchTab(tabId){
-  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  event.target.classList.add('active');
+function switchTab(tabId, el){
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
   
-  document.querySelectorAll('.tab-pane').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
   
-  document.getElementById('pageTitle').textContent = event.target.textContent.substring(3);
-  renderAll();
-}
-
-function init(){
-  initChart();
   renderAll();
 }
 
 function renderAll(){
   STATE = getGlobalState();
   
-  // Overview
-  document.getElementById('totTable').textContent = STATE.tables;
-  document.getElementById('totProd').textContent = STATE.products.length;
+  // Overview Stats
   const rev = STATE.orders.reduce((sum, o) => sum + o.items.reduce((s2, i)=>s2+(i.price||0)*i.quantity, 0), 0);
-  document.getElementById('totRev').textContent = `₺${rev.toFixed(2)}`;
+  document.getElementById('totRev').textContent = `₺${Math.floor(rev)}`;
+  document.getElementById('activeOrders').textContent = STATE.orders.filter(o => o.status !== 'delivered').length;
+  
+  const occupied = STATE.orders.filter(o => o.status !== 'delivered').length; // Simplification
+  document.getElementById('tableStatus').textContent = `${occupied}/${STATE.tables}`;
+  document.getElementById('totProd').textContent = STATE.products.length;
+  document.getElementById('totCat').textContent = STATE.categories.length;
+  document.getElementById('totOrders').textContent = STATE.orders.length;
 
-  // Menu - Categories
+  // Categories
   const catList = document.getElementById('catList');
   catList.innerHTML = STATE.categories.map((c, i) => `
-    <div style="background:var(--surface-solid);padding:10px 20px;border-radius:12px;border:2px solid var(--border);display:flex;align-items:center;gap:10px;font-weight:700;box-shadow:0 4px 10px rgba(92,67,5,0.1)">
-      ${c} <button style="background:none;border:none;color:#B22222;cursor:pointer;font-weight:900;font-size:1.1rem" onclick="deleteCategory(${i})">✕</button>
+    <div class="item-card">
+      <div class="item-icon">📦</div>
+      <div class="item-info">
+        <div class="item-name">${c}</div>
+        <div class="item-sub">${STATE.products.filter(p=>p.category === c).length} ürün</div>
+      </div>
+      <div class="item-actions">
+        <div class="action-btn btn-edit" onclick="editCategory('${c}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        <div class="action-btn btn-delete" onclick="deleteCategory(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></div>
+      </div>
     </div>
   `).join('');
 
   const pCat = document.getElementById('pCat');
   pCat.innerHTML = STATE.categories.map(c => `<option value="${c}">${c}</option>`).join('');
 
-  // Menu - Products
-  const prodTable = document.getElementById('prodTable');
-  prodTable.innerHTML = STATE.products.map(p => `
-    <tr>
-      <td><img src="${p.img}" style="width:70px;height:45px;object-fit:cover;border-radius:6px;border:1px solid var(--border);box-shadow:0 2px 5px rgba(0,0,0,0.1)"></td>
-      <td style="font-weight:700">${p.name}</td>
-      <td><span class="badge">${p.category}</span></td>
-      <td style="color:var(--primary);font-weight:800">₺${p.price}</td>
-      <td>
-        <button class="btn btn-gold" style="padding:6px 12px;font-size:0.85rem;margin-right:5px" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&#39;")})'>Düzenle</button>
-        <button class="btn btn-danger" style="padding:6px 12px;font-size:0.85rem" onclick="deleteProduct(${p.id})">Sil</button>
-      </td>
-    </tr>
+  // Products
+  const prodList = document.getElementById('prodList');
+  prodList.innerHTML = STATE.products.map(p => `
+    <div class="item-card">
+      <img src="${p.img}" class="item-img" onerror="this.src='https://via.placeholder.com/100'">
+      <div class="item-info">
+        <div class="item-name">${p.name}</div>
+        <div class="item-sub">${p.category}</div>
+      </div>
+      <div class="item-price">₺${p.price}</div>
+      <div class="item-actions">
+        <div class="action-btn btn-edit" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&#39;")})'><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        <div class="action-btn btn-delete" onclick="deleteProduct(${p.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></div>
+      </div>
+    </div>
   `).join('');
-
-  // Tables
-  document.getElementById('tableCountInput').value = STATE.tables;
 
   // Orders
-  const ordTbl = document.getElementById('ordersTable');
-  if(STATE.orders.length===0) ordTbl.innerHTML = `<tr><td colspan="5" style="font-weight:600;color:var(--muted)">Kayıtlı sipariş yok.</td></tr>`;
-  else {
-    ordTbl.innerHTML = STATE.orders.map(o => {
-      let t = o.items.reduce((sum, i)=>sum+(i.price||0)*i.quantity,0);
-      let s = o.status==='new' ? 'YENİ' : (o.status==='prep' ? 'HAZIRLANIYOR' : (o.status==='ready' ? 'HAZIR' : 'TESLİM EDİLDİ'));
-      return `<tr>
-        <td style="font-weight:700">#${o.id.slice(-4)}</td>
-        <td style="font-weight:600">Masa ${o.table}</td>
-        <td><span class="badge">${s}</span></td>
-        <td style="color:var(--primary);font-weight:800">₺${t.toFixed(2)}</td>
-        <td><button class="btn btn-danger" style="padding:6px 12px;font-size:0.85rem" onclick="deleteOrder('${o.id}')">Sil</button></td>
-      </tr>`;
+  const ordersList = document.getElementById('ordersList');
+  if(STATE.orders.length === 0) {
+    ordersList.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px;">Henüz sipariş yok.</div>';
+  } else {
+    ordersList.innerHTML = STATE.orders.slice().reverse().map(o => {
+      let total = o.items.reduce((s, i) => s + (i.price||0)*i.quantity, 0);
+      let statusText = o.status === 'new' ? 'Hazırlanıyor' : (o.status === 'prep' ? 'Hazırlanıyor' : (o.status === 'ready' ? 'Hazır' : 'Tamamlandı'));
+      return `
+        <div class="item-card" style="align-items: flex-start; flex-direction: column; gap: 15px;">
+          <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+             <div style="font-size:0.8rem; color:var(--muted); font-weight:700;">ORD-${o.id.slice(-4).toUpperCase()}</div>
+             <div style="color: var(--gold); font-weight:700;">${statusText}</div>
+          </div>
+          <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+             <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:1.5rem;">🪑</span>
+                <span style="font-size:1.4rem; font-weight:800;">Masa ${o.table}</span>
+             </div>
+             <div style="font-size:1.4rem; font-weight:800;">₺${total.toFixed(2)}</div>
+          </div>
+          <div style="width:100%; height:1px; background:var(--border);"></div>
+          <button class="btn-main" style="margin-bottom:0; padding:10px; background:transparent; border:1.5px solid #10B981; color:#10B981; font-size:0.95rem;" onclick="deleteOrder('${o.id}')">
+            ✓ Tamamlandı
+          </button>
+        </div>
+      `;
     }).join('');
   }
-
-  // Users
-  const uTbl = document.getElementById('usersTable');
-  uTbl.innerHTML = STATE.users.map(u => `
-    <tr>
-      <td style="font-weight:700">${u.id}</td>
-      <td style="font-weight:600">${u.name}</td>
-      <td><span class="badge">${u.role.toUpperCase()}</span></td>
-      <td><button class="btn btn-danger" style="padding:6px 12px;font-size:0.85rem" onclick="deleteUser(${u.id})">Sil</button></td>
-    </tr>
-  `).join('');
 }
 
 // Category Actions
@@ -320,16 +579,30 @@ function deleteCategory(i){
     renderAll();
   }
 }
+function editCategory(old){
+  const n = prompt("Kategori adını düzenle:", old);
+  if(n && n.trim()){
+    const idx = STATE.categories.indexOf(old);
+    if(idx > -1) {
+      STATE.categories[idx] = n.trim();
+      STATE.products.forEach(p => { if(p.category === old) p.category = n.trim(); });
+      saveGlobalState(STATE);
+      renderAll();
+    }
+  }
+}
 
 // Product Actions
-function handleImageUpload(e) {
+async function handleImageUpload(e) {
   const file = e.target.files[0];
   if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    document.getElementById('pImg').value = evt.target.result;
-  };
-  reader.readAsDataURL(file);
+  const formData = new FormData();
+  formData.append('image', file);
+  try {
+    const res = await fetch('/api/upload-image', { method: 'POST', body: formData });
+    const result = await res.json();
+    if(result.success) document.getElementById('pImg').value = result.url;
+  } catch (err) { alert("Yükleme hatası!"); }
 }
 
 function openProductModal(){
@@ -338,7 +611,7 @@ function openProductModal(){
   document.getElementById('pName').value = "";
   document.getElementById('pPrice').value = "";
   document.getElementById('pDesc').value = "";
-  document.getElementById('pImg').value = "https://loremflickr.com/600/400/food,meal/all";
+  document.getElementById('pImg').value = "";
   document.getElementById('prodModal').classList.add('active');
 }
 function editProduct(p){
@@ -359,16 +632,14 @@ function saveProduct(){
     category: document.getElementById('pCat').value,
     price: parseFloat(document.getElementById('pPrice').value),
     desc: document.getElementById('pDesc').value,
-    img: document.getElementById('pImg').value
+    img: document.getElementById('pImg').value || 'https://via.placeholder.com/100'
   };
-  
   if(id){
     const idx = STATE.products.findIndex(x => x.id == id);
     if(idx>-1) STATE.products[idx] = p;
   } else {
     STATE.products.push(p);
   }
-  
   saveGlobalState(STATE);
   document.getElementById('prodModal').classList.remove('active');
   renderAll();
@@ -380,49 +651,10 @@ function deleteProduct(id){
     renderAll();
   }
 }
-
-// Table actions
-function saveTableCount(){
-  const v = parseInt(document.getElementById('tableCountInput').value);
-  if(v > 0){
-    STATE.tables = v;
-    saveGlobalState(STATE);
-    alert("Masa kapasitesi güncellendi!");
-  }
-}
-
-// Order Actions
 function deleteOrder(id){
-  if(confirm("Siparişi silmek istiyor musunuz?")){
-    STATE.orders = STATE.orders.filter(o => o.id !== id);
-    saveGlobalState(STATE);
-    renderAll();
-  }
-}
-function clearOrders(){
-  if(confirm("Tüm geçmişi silmek istediğinize emin misiniz? (Bu işlem geri alınamaz)")){
-    STATE.orders = [];
-    saveGlobalState(STATE);
-    renderAll();
-  }
-}
-
-// User Actions
-function addUser(){
-  const name = prompt("Kullanıcı adı:");
-  if(name && name.trim()){
-    STATE.users.push({id: Date.now(), name: name.trim(), role: 'personel'});
-    saveGlobalState(STATE);
-    renderAll();
-  }
-}
-function deleteUser(id){
-  if(id === 1) return alert("Sistem yöneticisi silinemez!");
-  if(confirm("Kullanıcıyı silmek istiyor musunuz?")){
-    STATE.users = STATE.users.filter(u => u.id !== id);
-    saveGlobalState(STATE);
-    renderAll();
-  }
+  STATE.orders = STATE.orders.filter(o => o.id !== id);
+  saveGlobalState(STATE);
+  renderAll();
 }
 
 function initChart(){
@@ -432,30 +664,30 @@ function initChart(){
     data: {
       labels: ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'],
       datasets: [{
-        label: 'Sipariş Trafiği',
         data: [15, 25, 20, 45, 60, 80, 50],
-        borderColor: '#B8860B',
-        backgroundColor: 'rgba(184, 134, 11, 0.1)',
+        borderColor: '#D4AF37',
+        backgroundColor: 'rgba(212, 175, 55, 0.1)',
         borderWidth: 3,
         tension: 0.4,
-        fill: true
+        fill: true,
+        pointRadius: 5,
+        pointBackgroundColor: '#D4AF37'
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
       scales: { 
-        y: { grid: { color: 'rgba(138, 100, 18, 0.2)' }, ticks: { color: '#5C4305', font:{family:'Poppins', weight:'600'} } }, 
-        x: { grid: { display: false }, ticks: { color: '#5C4305', font:{family:'Poppins', weight:'600'} } } 
+        y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#8E8E93' } }, 
+        x: { grid: { display: false }, ticks: { color: '#8E8E93' } } 
       }
     }
   });
 }
 
-BC.onmessage = (e) => {
-  if(e.data.type === 'STATE_UPDATED') renderAll();
-};
-
-init();
+renderAll();
+initChart();
+BC.onmessage = (e) => { if(e.data.type === 'STATE_UPDATED') renderAll(); };
 </script>
 </body>
 </html>

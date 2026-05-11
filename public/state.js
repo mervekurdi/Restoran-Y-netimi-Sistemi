@@ -1,9 +1,8 @@
-const STORAGE_KEY = 'restoran_gold_state_v6';
+const STORAGE_KEY = 'restoran_gold_state_persistent';
 const BC = new BroadcastChannel('restaurant_gold');
 
 const defaultCategories = ['Burger', 'Pizza', 'Döner & Kebap', 'Makarna', 'Sıcak İçecekler', 'Soğuk İçecekler', 'Tatlılar'];
 
-// Using loremflickr with specific keywords to guarantee 100% image availability without 404 errors.
 const defaultProducts = [
   // BURGER (7)
   {id:1, category:'Burger', name:'Klasik Burger', price:180, img:'https://image.pollinations.ai/prompt/delicious%20Klasik%20Burger%20dark%20moody%20lighting%2C%20food%20photography%2C%20high%20end%20luxury%20restaurant%2C%20highly%20detailed%2C%20photorealistic?width=600&height=400&nologo=true&seed=1', desc:'150g dana köfte, taze yeşillik ve özel burger sosu.'},
@@ -71,25 +70,67 @@ const defaultProducts = [
 
 function getGlobalState() {
   const s = localStorage.getItem(STORAGE_KEY);
+  let state;
   if (s) {
-    let parsed = JSON.parse(s);
-    if(!parsed.categories) parsed.categories = defaultCategories;
-    if(!parsed.products) parsed.products = defaultProducts;
-    if(!parsed.tables) parsed.tables = 25;
-    if(!parsed.users) parsed.users = [{id:1, role:'admin', name:'Yönetici'}];
-    return parsed;
+    state = JSON.parse(s);
+  } else {
+    state = { 
+      calls: {}, 
+      orders: [], 
+      tables: 25,
+      categories: defaultCategories,
+      products: defaultProducts,
+      users: [{id:1, role:'admin', name:'Yönetici'}]
+    };
   }
-  return { 
-    calls: {}, 
-    orders: [], 
-    tables: 25,
-    categories: defaultCategories,
-    products: defaultProducts,
-    users: [{id:1, role:'admin', name:'Yönetici'}]
-  };
+
+  // Set defaults for missing fields
+  if(!state.categories) state.categories = defaultCategories;
+  if(!state.products) state.products = defaultProducts;
+  if(!state.tables) state.tables = 25;
+  if(!state.users) state.users = [{id:1, role:'admin', name:'Yönetici'}];
+  if(!state.calls) state.calls = {};
+  if(!state.orders) state.orders = [];
+
+  // Sync with server in background
+  syncWithServer();
+
+  return state;
+}
+
+async function syncWithServer() {
+  try {
+    const res = await fetch('/api/menu');
+    const result = await res.json();
+    if (result.success && result.data.length > 0) {
+      const state = getGlobalState();
+      
+      // Update products from server
+      state.products = result.data;
+      
+      // Update categories from products
+      const uniqueCats = [...new Set(result.data.map(p => p.category))];
+      if (uniqueCats.length > 0) state.categories = uniqueCats;
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      BC.postMessage({ type: 'STATE_UPDATED' });
+    }
+  } catch (e) {
+    console.error("Server sync failed:", e);
+  }
 }
 
 function saveGlobalState(state) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   BC.postMessage({ type: 'STATE_UPDATED' });
+  
+  // Persist to server
+  fetch('/api/sync-state', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      categories: state.categories,
+      products: state.products
+    })
+  }).catch(e => console.error("Server save failed:", e));
 }

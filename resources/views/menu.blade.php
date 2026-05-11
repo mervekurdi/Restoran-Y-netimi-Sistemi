@@ -166,9 +166,17 @@
 
                 @foreach($category->menus as $menu)
                     <div class="menu-item" id="menu-item-{{ $menu->id }}">
-                        <div>
-                            <div class="food-name">{{ $menu->name }}</div>
-                            <div class="food-price">{{ number_format($menu->price, 2) }} ₺</div>
+                        <div style="display:flex; gap:16px; align-items:center;">
+                            @if($menu->img)
+                                <img src="{{ $menu->img }}" style="width:80px; height:60px; object-fit:cover; border-radius:8px; border:1px solid var(--clr-border);">
+                            @endif
+                            <div>
+                                <div class="food-name">{{ $menu->name }}</div>
+                                <div class="food-price">{{ number_format($menu->price, 2) }} ₺</div>
+                                @if($menu->desc)
+                                    <div style="font-size:0.8rem; color:var(--clr-text-mute);">{{ $menu->desc }}</div>
+                                @endif
+                            </div>
                         </div>
                         <form action="{{ route('cart.add', $menu->id) }}" method="POST">
                             @csrf

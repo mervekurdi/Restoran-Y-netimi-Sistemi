@@ -32,6 +32,8 @@ class ApiController extends Controller
                     'id'    => $m->id,
                     'name'  => $m->name,
                     'price' => (float) $m->price,
+                    'img'   => $m->img,
+                    'desc'  => $m->desc,
                 ]),
             ];
         });
@@ -52,12 +54,91 @@ class ApiController extends Controller
             'id'       => $m->id,
             'name'     => $m->name,
             'price'    => (float) $m->price,
+            'img'      => $m->img,
+            'desc'     => $m->desc,
             'category' => $m->category?->name,
         ]);
 
         return response()->json([
             'success' => true,
             'data'    => $items,
+        ]);
+    }
+
+    /**
+     * POST /api/upload-image
+     * Uploads an image and returns the public URL.
+     */
+    public function uploadImage(Request $request): JsonResponse
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('menu_images', $filename, 'public');
+            
+            return response()->json([
+                'success' => true,
+                'url'     => $request->getSchemeAndHttpHost() . '/storage/' . $path,
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Yükleme başarısız.'], 400);
+    }
+
+    /**
+     * POST /api/sync-state
+     * Syncs the frontend state (categories and products) to the database.
+     */
+    public function syncState(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'categories' => 'required|array',
+            'products'   => 'required|array',
+        ]);
+
+        // 1. Sync Categories
+        foreach ($validated['categories'] as $catName) {
+            Category::firstOrCreate(['name' => $catName]);
+        }
+        // Optional: Remove categories not in the list? Let's keep them for now.
+
+        // 2. Sync Products
+        foreach ($validated['products'] as $p) {
+            $category = Category::where('name', $p['category'])->first();
+            if (!$category) {
+                $category = Category::create(['name' => $p['category']]);
+            }
+
+            // If product has a numeric ID from state.js, try to find it. 
+            // Otherwise match by name within category.
+            $query = Menu::where('name', $p['name'])->where('category_id', $category->id);
+            
+            $menu = $query->first();
+
+            if ($menu) {
+                $menu->update([
+                    'price' => $p['price'],
+                    'img'   => $p['img'],
+                    'desc'  => $p['desc'] ?? '',
+                ]);
+            } else {
+                Menu::create([
+                    'name'        => $p['name'],
+                    'category_id' => $category->id,
+                    'price'       => $p['price'],
+                    'img'         => $p['img'],
+                    'desc'        => $p['desc'] ?? '',
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sistem durumu başarıyla senkronize edildi.',
         ]);
     }
 

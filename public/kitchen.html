@@ -3,189 +3,339 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Profesyonel Mutfak KDS</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Mutfak Ekranı | Restoran Yönetimi</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-        :root {
-    --bg-gradient: #0F172A;
-    --surface: #1E293B;
-    --surface-solid: #1E293B;
-    --border: #334155;
-    --primary: #F59E0B;
-    --primary-hover: #D97706;
-    --primary-light: rgba(245, 158, 11, 0.15);
-    --text: #F8FAFC;
-    --muted: #94A3B8;
-    --radius: 16px;
-    --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-    --gold-glow: 0 0 20px rgba(245, 158, 11, 0.2);
-    --secondary: #3B82F6;
+  :root {
+    --bg-color: #0A0A0A;
+    --surface: #1C1C1E;
+    --border: #2C2C2E;
+    --gold: #D4AF37;
+    --gold-hover: #B8860B;
+    --gold-light: rgba(212, 175, 55, 0.1);
+    --text: #FFFFFF;
+    --muted: #8E8E93;
     --success: #10B981;
-    --warning: #EF4444;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Poppins',sans-serif;background:var(--bg-gradient);background-attachment:fixed;color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-  header{background:rgba(15, 23, 42, 0.85);backdrop-filter:blur(15px);border-bottom:1px solid var(--border);padding:15px 30px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 5px 20px rgba(92,67,5,0.15);z-index:10}
-  .header-left{display:flex;align-items:center;gap:20px}
-  .back-btn{text-decoration:none;color:var(--primary);font-weight:600;font-size:0.9rem;transition:all 0.2s;display:flex;align-items:center;gap:5px;background:var(--primary-light);padding:6px 12px;border-radius:8px}
-  .back-btn:hover{background:var(--primary);color:#0F172A; font-weight:700;}
-  .logo{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:var(--primary);text-decoration:none;letter-spacing:1px}
-  .clock{font-size:1.4rem;font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums;background:var(--primary-light);padding:6px 16px;border-radius:12px;border:1px solid var(--border)}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { 
+    font-family: 'Poppins', sans-serif; 
+    background: var(--bg-color); 
+    color: var(--text); 
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-  .board{flex:1;display:flex;gap:30px;padding:30px;overflow-x:auto}
+  /* Header */
+  .header {
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .back-circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .back-circle:hover { background: var(--gold-light); border-color: var(--gold); }
+  .back-circle svg { width: 20px; height: 20px; stroke: #EF4444; stroke-width: 2.5; }
+
+  .header-content {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .header-subtitle {
+    color: #EF4444;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  /* Tabs */
+  .nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0 40px;
+  }
+  .tab-btn {
+    padding: 10px 25px;
+    border-radius: 99px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .tab-btn.active {
+    background: rgba(229, 143, 101, 0.15);
+    border-color: #E58F65;
+    color: #E58F65;
+  }
+
+  /* Grid Layout */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px 100px;
+  }
+
+  .orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 25px;
+  }
+
+  /* Order Card */
+  .order-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s;
+  }
+  .order-card:hover { border-color: var(--gold); }
+
+  .card-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .table-info { display: flex; flex-direction: column; gap: 2px; }
+  .table-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .table-name { font-size: 2.2rem; font-weight: 800; color: var(--gold); line-height: 1; }
+
+  .timer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .status-badge {
+    background: var(--gold-light);
+    color: var(--gold);
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 15px;
+    width: fit-content;
+  }
+  .status-badge::before { content: ''; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; }
+
+  .card-body { padding: 25px; flex: 1; }
+  .order-id { font-size: 0.85rem; color: var(--muted); font-weight: 600; margin-bottom: 15px; }
+
+  .item-list { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
+  .item { display: flex; align-items: center; gap: 15px; }
+  .item-qty {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 0.9rem;
+  }
+  .item-name { font-size: 1.1rem; font-weight: 600; color: #FFF; }
   
-  .column{flex:1;min-width:380px;background:rgba(15, 23, 42, 0.85);backdrop-filter:blur(10px);border-radius:16px;display:flex;flex-direction:column;padding:10px;border:1px solid var(--border);box-shadow:var(--shadow)}
-  .col-header{padding:15px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;border-bottom:2px solid var(--border)}
-  .col-title{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--primary);letter-spacing:1px}
-  .col-count{background:var(--primary);color:#0F172A; font-weight:700;;padding:4px 14px;border-radius:16px;font-size:0.95rem;font-weight:800;box-shadow:0 4px 10px rgba(138,100,18,0.3)}
-  
-  .col-content{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:15px;padding:5px}
+  .note-box {
+    background: rgba(212, 175, 55, 0.05);
+    border-left: 3px solid var(--gold);
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: var(--gold);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
 
-  .ticket{background:var(--surface-solid);border-radius:16px;padding:25px;position:relative;box-shadow:0 5px 15px rgba(92,67,5,0.1);transition:transform 0.2s;border:1px solid var(--border);border-left:6px solid var(--primary)}
-  .ticket:hover{transform:translateY(-4px);box-shadow:0 15px 30px rgba(92,67,5,0.2)}
+  .card-footer { padding: 0 25px 25px; }
+  .btn-ready {
+    width: 100%;
+    padding: 18px;
+    background: var(--success);
+    color: #000;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.3s;
+  }
+  .btn-ready:hover { filter: brightness(1.1); transform: translateY(-2px); }
 
-  .ticket-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid var(--border)}
-  .ticket-table{font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:10px}
-  .ticket-table::before{content:'Masa';font-family:'Poppins',sans-serif;font-size:0.9rem;font-weight:700;color:var(--primary);text-transform:uppercase}
-  .ticket-time{font-size:1.1rem;font-weight:800;font-variant-numeric:tabular-nums;background:var(--primary-light);padding:6px 12px;border-radius:8px;color:var(--primary)}
-  .ticket-time.warning{background:rgba(229,143,101,0.2);color:#B22222}
-  .ticket-time.danger{background:rgba(178,34,34,0.15);color:var(--warning);animation:pulse 1.5s infinite}
-
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
-
-  .item-list{display:flex;flex-direction:column;gap:12px;margin-bottom:25px}
-  .item{display:flex;justify-content:space-between;align-items:flex-start;font-size:1.1rem;font-weight:700;color:var(--text)}
-  .qty{background:var(--primary);padding:4px 12px;border-radius:8px;font-weight:800;color:#0F172A; font-weight:700;;margin-right:12px;font-size:1rem;box-shadow:0 2px 5px rgba(138,100,18,0.3)}
-  .item-name{flex:1;line-height:1.4}
-  .item-note{font-size:0.9rem;color:var(--primary);margin-top:6px;background:var(--primary-light);padding:8px 12px;border-radius:8px;display:inline-block;width:fit-content;border:1px solid var(--border);font-weight:600}
-
-  .ticket-action{width:100%;padding:16px;border-radius:12px;border:none;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:800;font-size:1.05rem;transition:all 0.3s;text-transform:uppercase;letter-spacing:1px;box-shadow:0 5px 15px rgba(92,67,5,0.15)}
-  .btn-start{background:var(--primary);color:#0F172A; font-weight:700;}
-  .btn-start:hover{background:var(--primary-hover);transform:translateY(-2px)}
-  .btn-ready{background:var(--success);color:#FFF}
-  .btn-ready:hover{background:var(--success);transform:translateY(-2px)}
+  @media (max-width: 600px) {
+    .container { padding: 20px; }
+    .header { padding: 20px; }
+    .orders-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-left">
-    <a href="/" class="back-btn">← Ana Sayfa</a>
-    <div class="logo">👨‍🍳 Mutfak KDS</div>
-  </div>
-  <div class="clock" id="clock">00:00:00</div>
-</header>
-
-<div class="board">
-  <div class="column">
-    <div class="col-header">
-      <div class="col-title">Yeni Gelenler</div>
-      <div class="col-count" id="cNew">0</div>
+<div class="header">
+  <a href="/" class="back-circle" title="Ana Sayfaya Dön">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  </a>
+  <div class="header-content">
+    <div class="header-title">
+      <span>🔥</span>
+      Mutfak Ekranı
     </div>
-    <div class="col-content" id="colNew"></div>
+    <div class="header-subtitle" id="activeCount">0 aktif sipariş</div>
   </div>
+</div>
 
-  <div class="column">
-    <div class="col-header">
-      <div class="col-title" style="color:var(--secondary)">Hazırlananlar</div>
-      <div class="col-count" style="background:var(--secondary);color:#FFF" id="cPrep">0</div>
-    </div>
-    <div class="col-content" id="colPrep"></div>
-  </div>
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="filterOrders('all', this)">Tümü (0)</button>
+  <button class="tab-btn" onclick="filterOrders('prep', this)">Hazırlanıyor (0)</button>
+  <button class="tab-btn" onclick="filterOrders('ready', this)">Hazır (0)</button>
+</div>
+
+<div class="container">
+  <div class="orders-grid" id="ordersGrid"></div>
 </div>
 
 <script src="/state.js"></script>
 <script>
 let STATE = getGlobalState();
+let currentFilter = 'all';
 
-setInterval(() => {
-  document.getElementById('clock').textContent = new Date().toLocaleTimeString('tr-TR');
-  updateTimers();
-}, 1000);
-
-function init(){
+function filterOrders(status, el){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = status;
   render();
 }
 
 function render(){
   STATE = getGlobalState();
+  const grid = document.getElementById('ordersGrid');
+  grid.innerHTML = '';
   
-  const colNew = document.getElementById('colNew');
-  const colPrep = document.getElementById('colPrep');
-  colNew.innerHTML = ''; colPrep.innerHTML = '';
-  
-  let newC = 0; let prepC = 0;
-
-  STATE.orders.forEach(o => {
-    if(o.status === 'new' || o.status === 'prep'){
-      if(o.status === 'new') newC++;
-      if(o.status === 'prep') prepC++;
-      
-      let items = o.items.map(i => `
-        <div style="display:flex;flex-direction:column">
-          <div class="item">
-            <span class="qty">${i.quantity}x</span>
-            <span class="item-name">${i.name}</span>
-          </div>
-          ${i.note ? `<div class="item-note">Özel İstek: ${i.note}</div>` : ''}
-        </div>
-      `).join('');
-
-      let btn = o.status === 'new' ? 
-        `<button class="ticket-action btn-start" onclick="changeStatus('${o.id}', 'prep')">Hazırlamaya Başla</button>` : 
-        `<button class="ticket-action btn-ready" onclick="changeStatus('${o.id}', 'ready')">Teslime Hazır İşaretle</button>`;
-
-      let borderColor = o.status === 'new' ? 'var(--primary)' : 'var(--secondary)';
-
-      let html = `
-        <div class="ticket" style="border-left-color:${borderColor}">
-          <div class="ticket-header">
-            <div class="ticket-table">${o.table}</div>
-            <div class="ticket-time" id="time-${o.id}" data-ts="${o.timestamp}">00:00</div>
-          </div>
-          <div class="item-list">${items}</div>
-          ${btn}
-        </div>
-      `;
-
-      if(o.status === 'new') colNew.insertAdjacentHTML('beforeend', html);
-      else colPrep.insertAdjacentHTML('beforeend', html);
-    }
+  const filtered = STATE.orders.filter(o => {
+    if(o.status === 'delivered') return false;
+    if(currentFilter === 'all') return (o.status === 'new' || o.status === 'prep');
+    return o.status === currentFilter;
   });
 
-  document.getElementById('cNew').textContent = newC;
-  document.getElementById('cPrep').textContent = prepC;
-  updateTimers();
-}
+  const allCount = STATE.orders.filter(o => o.status !== 'delivered').length;
+  const prepCount = STATE.orders.filter(o => o.status === 'prep' || o.status === 'new').length;
+  const readyCount = STATE.orders.filter(o => o.status === 'ready').length;
 
-function updateTimers(){
-  document.querySelectorAll('.ticket-time').forEach(el => {
-    const ts = parseInt(el.getAttribute('data-ts'));
-    const diff = Math.floor((Date.now() - ts) / 1000);
-    const m = Math.floor(diff / 60).toString().padStart(2,'0');
-    const s = (diff % 60).toString().padStart(2,'0');
-    el.textContent = `${m}:${s}`;
-    
-    el.className = 'ticket-time';
-    if(diff > 900) el.classList.add('danger'); // 15 min
-    else if(diff > 600) el.classList.add('warning'); // 10 min
+  document.getElementById('activeCount').textContent = `${allCount} aktif sipariş`;
+  document.querySelectorAll('.tab-btn')[0].textContent = `Tümü (${allCount})`;
+  document.querySelectorAll('.tab-btn')[1].textContent = `Hazırlanıyor (${prepCount})`;
+  document.querySelectorAll('.tab-btn')[2].textContent = `Hazır (${readyCount})`;
+
+  filtered.forEach(o => {
+    const elapsed = Math.floor((Date.now() - (o.timestamp || Date.now())) / 60000);
+    const itemsHtml = o.items.map(i => `
+      <div class="item">
+        <div class="item-qty">${i.quantity}</div>
+        <div class="item-name">${i.name}</div>
+      </div>
+    `).join('');
+
+    const card = `
+      <div class="order-card">
+        <div class="card-header">
+          <div class="table-info">
+            <div class="table-label">MASA</div>
+            <div class="table-name">${o.table}</div>
+          </div>
+          <div class="timer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ${elapsed}dk
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="order-id">ORD-${o.id.slice(-4).toUpperCase()}</div>
+          <div class="item-list">${itemsHtml}</div>
+          <div class="status-badge">Hazırlanıyor</div>
+          ${o.note ? `
+            <div class="note-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              ${o.note}
+            </div>
+          ` : ''}
+        </div>
+        <div class="card-footer">
+          <button class="btn-ready" onclick="completeOrder('${o.id}')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            Hazır İşaretle
+          </button>
+        </div>
+      </div>
+    `;
+    grid.insertAdjacentHTML('beforeend', card);
   });
 }
 
-function changeStatus(id, newStatus){
+function completeOrder(id){
   STATE = getGlobalState();
   const o = STATE.orders.find(x => x.id === id);
-  if(o) o.status = newStatus;
-  saveGlobalState(STATE);
-  render();
+  if(o) {
+     o.status = 'ready';
+     saveGlobalState(STATE);
+     render();
+  }
 }
 
-BC.onmessage = (e) => {
-  if(e.data.type === 'STATE_UPDATED') render();
-};
-
-init();
+render();
+setInterval(render, 30000); // Auto refresh timers
+BC.onmessage = (e) => { if(e.data.type === 'STATE_UPDATED') render(); };
 </script>
 </body>
 </html>
