@@ -31,13 +31,19 @@
         },
         {
             "src": "/(.*)",
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Accept, Authorization, X-Requested-With"
+            },
             "dest": "/api/index.php"
         }
     ],
     "env": {
         "APP_NAME": "Restoran",
         "APP_ENV": "production",
-        "APP_DEBUG": "true",
+        "APP_DEBUG": "false",
+        "APP_KEY": "base64:QcpPcomZlw2bWPgHPghJ4OyTNOLOJdzTbjyUOg2agPw=",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
         "APP_PACKAGES_CACHE": "/tmp/packages.php",
@@ -46,6 +52,8 @@
         "CACHE_DRIVER": "array",
         "LOG_CHANNEL": "stderr",
         "SESSION_DRIVER": "cookie",
-        "VIEW_COMPILED_PATH": "/tmp/views"
+        "VIEW_COMPILED_PATH": "/tmp/views",
+        "DB_CONNECTION": "sqlite",
+        "DB_DATABASE": "/tmp/database.sqlite"
     }
 }

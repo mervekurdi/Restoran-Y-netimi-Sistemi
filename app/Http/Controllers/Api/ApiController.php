@@ -96,43 +96,49 @@ class ApiController extends Controller
     public function syncState(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'categories' => 'required|array',
-            'products'   => 'required|array',
+            'categories' => 'sometimes|array',
+            'products'   => 'sometimes|array',
+            'menu'       => 'sometimes|array',
+            'orders'     => 'sometimes|array',
         ]);
 
+        // Accept either 'products' or 'menu' as the items list
+        $products = $validated['products'] ?? $validated['menu'] ?? [];
+        $categories = $validated['categories'] ?? [];
+
         // 1. Sync Categories
-        foreach ($validated['categories'] as $catName) {
-            Category::firstOrCreate(['name' => $catName]);
+        foreach ($categories as $catName) {
+            if (is_string($catName)) {
+                Category::firstOrCreate(['name' => $catName]);
+            }
         }
-        // Optional: Remove categories not in the list? Let's keep them for now.
 
         // 2. Sync Products
-        foreach ($validated['products'] as $p) {
-            $category = Category::where('name', $p['category'])->first();
-            if (!$category) {
-                $category = Category::create(['name' => $p['category']]);
+        foreach ($products as $p) {
+            if (!isset($p['name'])) continue;
+
+            $category = null;
+            if (!empty($p['category'])) {
+                $category = Category::firstOrCreate(['name' => $p['category']]);
             }
 
-            // If product has a numeric ID from state.js, try to find it. 
-            // Otherwise match by name within category.
-            $query = Menu::where('name', $p['name'])->where('category_id', $category->id);
-            
+            $query = Menu::where('name', $p['name']);
+            if ($category) $query->where('category_id', $category->id);
             $menu = $query->first();
 
+            $data = [
+                'price' => $p['price'] ?? 0,
+                'img'   => $p['img'] ?? $p['image'] ?? null,
+                'desc'  => $p['desc'] ?? '',
+            ];
+
             if ($menu) {
-                $menu->update([
-                    'price' => $p['price'],
-                    'img'   => $p['img'],
-                    'desc'  => $p['desc'] ?? '',
-                ]);
+                $menu->update($data);
             } else {
-                Menu::create([
+                Menu::create(array_merge($data, [
                     'name'        => $p['name'],
-                    'category_id' => $category->id,
-                    'price'       => $p['price'],
-                    'img'         => $p['img'],
-                    'desc'        => $p['desc'] ?? '',
-                ]);
+                    'category_id' => $category?->id,
+                ]));
             }
         }
 
