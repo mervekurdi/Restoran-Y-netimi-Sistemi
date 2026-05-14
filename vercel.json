@@ -6,6 +6,10 @@
     ],
     "routes": [
         {
+            "src": "/env-test",
+            "dest": "public/env-test.html"
+        },
+        {
             "src": "/admin",
             "dest": "public/admin.html"
         },

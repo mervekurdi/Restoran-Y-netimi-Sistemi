@@ -155,7 +155,8 @@ function render(){
     }
 
     card.className = classes.join(' ');
-    card.onclick = () => openPanel(i);
+    card.dataset.tableId = i;
+    card.onclick = function() { openPanel(parseInt(this.dataset.tableId)); };
     card.innerHTML = `<div class="table-number">${i}</div><div class="table-status">${status}</div>`;
     grid.appendChild(card);
   }
@@ -164,7 +165,7 @@ function render(){
 }
 
 function openPanel(t){
-  activeTable = t;
+  activeTable = parseInt(t);
   document.getElementById('panel').classList.add('open');
   render();
 }

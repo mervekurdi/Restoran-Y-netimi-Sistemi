@@ -303,7 +303,7 @@
     </div>
     
     <div class="header-right">
-      <div class="table-badge">
+      <div class="table-badge" onclick="showTableSelection()" style="cursor: pointer;" title="Masa Değiştir">
         <span>🪑</span> Masa <span id="tableDisplay">?</span>
       </div>
       <button class="call-btn-brown" id="callWaiterBtn" onclick="callWaiter()">
@@ -428,15 +428,18 @@ function init(){
 function showTableSelection() {
   const grid = document.getElementById('modalTableGrid');
   grid.innerHTML = '';
+  const currentVal = tableNumber || 1;
+  document.getElementById('tableInput').value = currentVal;
+  
   for(let i=1; i<=16; i++){
     const btn = document.createElement('button');
     btn.className = 'table-btn';
-    if(i == 1) btn.classList.add('selected');
+    if(i == currentVal) btn.classList.add('selected');
     btn.textContent = i;
-    btn.onclick = () => {
+    btn.onclick = function() {
       document.querySelectorAll('.table-btn').forEach(b=>b.classList.remove('selected'));
-      btn.classList.add('selected');
-      document.getElementById('tableInput').value = i;
+      this.classList.add('selected');
+      document.getElementById('tableInput').value = this.textContent;
     };
     grid.appendChild(btn);
   }
@@ -457,9 +460,9 @@ function cancelTableSelection() {
 }
 
 function setTable(t) {
-  tableNumber = t;
-  localStorage.setItem('customerTable', t);
-  document.getElementById('tableDisplay').textContent = t;
+  tableNumber = parseInt(t) || 1;
+  localStorage.setItem('customerTable', tableNumber);
+  document.getElementById('tableDisplay').textContent = tableNumber;
 }
 
 function renderCategories(){

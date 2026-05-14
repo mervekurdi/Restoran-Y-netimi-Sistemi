@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vercel Environment Test — Restoran Backend</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      padding: 24px;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #d4a843;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 28px;
+    }
+    .base-url {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+    .base-url span { color: #d4a843; font-weight: 600; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .card.pass  { border-color: #2a6b3a; }
+    .card.fail  { border-color: #6b2a2a; }
+    .card.warn  { border-color: #6b5a1a; }
+    .card.running { border-color: #1a4a6b; }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #333;
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .card.pass  .status-dot { background: #4caf50; box-shadow: 0 0 8px #4caf5088; }
+    .card.fail  .status-dot { background: #f44336; box-shadow: 0 0 8px #f4433688; }
+    .card.warn  .status-dot { background: #ff9800; box-shadow: 0 0 8px #ff980088; }
+    .card.running .status-dot { background: #2196f3; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #ccc;
+    }
+    .badge {
+      margin-left: auto;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .card.pass  .badge { background: #1a3d22; color: #4caf50; }
+    .card.fail  .badge { background: #3d1a1a; color: #f44336; }
+    .card.warn  .badge { background: #3d2e0a; color: #ff9800; }
+    .card.running .badge { background: #0a2a3d; color: #2196f3; }
+    .card-body {
+      font-size: 0.78rem;
+      color: #777;
+      line-height: 1.6;
+    }
+    .card-body .key { color: #aaa; }
+    .card-body .val { color: #e0e0e0; }
+    .card-body .error-msg { color: #f44336; word-break: break-word; }
+    .card-body .json-preview {
+      background: #0a0a0a;
+      border: 1px solid #1e1e1e;
+      border-radius: 6px;
+      padding: 8px;
+      margin-top: 8px;
+      font-size: 0.73rem;
+      max-height: 120px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #8bc34a;
+    }
+    .latency { font-size: 0.72rem; color: #555; margin-top: 4px; }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 10px 22px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    button:active { transform: scale(0.97); }
+    #btn-run { background: #d4a843; color: #000; }
+    #btn-run:hover { opacity: 0.9; }
+    #btn-clear { background: #1e1e1e; color: #aaa; border: 1px solid #333; }
+    .summary-bar {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 12px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 24px;
+      font-size: 0.82rem;
+      flex-wrap: wrap;
+    }
+    .summary-bar .s-pass { color: #4caf50; font-weight: 700; }
+    .summary-bar .s-fail { color: #f44336; font-weight: 700; }
+    .summary-bar .s-warn { color: #ff9800; font-weight: 700; }
+    .summary-bar .s-label { color: #555; margin-right: 4px; }
+    .section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #444;
+      margin: 20px 0 10px;
+    }
+    #timestamp { color: #555; font-size: 0.75rem; margin-top: 28px; text-align: center; }
+  </style>
+</head>
+<body>
+
+<h1>⚡ Vercel Environment Tester</h1>
+<p class="subtitle">Restoran Yönetim Sistemi — Backend Diagnostic Panel</p>
+
+<div class="base-url">
+  Testing: <span id="display-url"></span>
+</div>
+
+<div class="btn-row">
+  <button id="btn-run" onclick="runAllTests()">▶ Run All Tests</button>
+  <button id="btn-clear" onclick="clearResults()">✕ Clear</button>
+</div>
+
+<div class="summary-bar" id="summary-bar" style="display:none">
+  <span><span class="s-label">PASS</span><span class="s-pass" id="sum-pass">0</span></span>
+  <span><span class="s-label">FAIL</span><span class="s-fail" id="sum-fail">0</span></span>
+  <span><span class="s-label">WARN</span><span class="s-warn" id="sum-warn">0</span></span>
+  <span><span class="s-label">Total Time</span><span id="sum-time" style="color:#aaa">—</span></span>
+</div>
+
+<p class="section-title">PHP &amp; Runtime</p>
+<div class="grid" id="grid-runtime"></div>
+
+<p class="section-title">API Endpoints</p>
+<div class="grid" id="grid-api"></div>
+
+<p class="section-title">CORS &amp; Headers</p>
+<div class="grid" id="grid-cors"></div>
+
+<p class="section-title">POST Endpoints</p>
+<div class="grid" id="grid-post"></div>
+
+<div id="timestamp"></div>
+
+<script>
+const BASE = 'https://restoran-y-netimi-sistemi.vercel.app';
+document.getElementById('display-url').textContent = BASE;
+
+let cards = {};
+
+function createCard(gridId, id, title) {
+  const grid = document.getElementById(gridId);
+  const card = document.createElement('div');
+  card.className = 'card running';
+  card.id = 'card-' + id;
+  card.innerHTML = `
+    <div class="card-header">
+      <div class="status-dot"></div>
+      <span class="card-title">${title}</span>
+      <span class="badge">PENDING</span>
+    </div>
+    <div class="card-body">Waiting…</div>
+  `;
+  grid.appendChild(card);
+  cards[id] = card;
+  return card;
+}
+
+function updateCard(id, status, bodyHTML, latency) {
+  const card = cards[id];
+  if (!card) return;
+  card.className = 'card ' + status;
+  card.querySelector('.badge').textContent =
+    status === 'pass' ? 'PASS' : status === 'fail' ? 'FAIL' : status === 'warn' ? 'WARN' : 'RUNNING';
+  card.querySelector('.card-body').innerHTML = bodyHTML +
+    (latency != null ? `<div class="latency">⏱ ${latency}ms</div>` : '');
+}
+
+async function fetchTest(url, options = {}) {
+  const t = Date.now();
+  try {
+    const r = await fetch(url, { ...options, signal: AbortSignal.timeout(12000) });
+    const lat = Date.now() - t;
+    let text = '';
+    try { text = await r.text(); } catch(_) {}
+    return { ok: r.ok, status: r.status, text, latency: lat, headers: r.headers };
+  } catch (e) {
+    return { ok: false, status: 0, text: '', latency: Date.now() - t, error: e.message };
+  }
+}
+
+function jsonPreview(text, maxLen = 300) {
+  try {
+    const obj = JSON.parse(text);
+    const s = JSON.stringify(obj, null, 2);
+    return `<div class="json-preview">${escHtml(s.slice(0, maxLen))}${s.length > maxLen ? '\n…' : ''}</div>`;
+  } catch(_) {
+    const s = text.slice(0, maxLen);
+    return `<div class="json-preview">${escHtml(s)}${text.length > maxLen ? '…' : ''}</div>`;
+  }
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function row(key, val) {
+  return `<div><span class="key">${key}: </span><span class="val">${val}</span></div>`;
+}
+
+// ── TESTS ────────────────────────────────────────────
+
+async function testRootReachable() {
+  createCard('grid-runtime', 'root', '🌐 Root URL Reachable');
+  const res = await fetchTest(BASE + '/');
+  if (res.error) {
+    updateCard('root', 'fail', `<span class="error-msg">Network error: ${escHtml(res.error)}</span>`, res.latency);
+  } else {
+    const ok = res.status < 500;
+    updateCard('root', ok ? 'pass' : 'fail',
+      row('HTTP Status', res.status) + row('Content-Length', res.text.length + ' chars'),
+      res.latency);
+  }
+}
+
+async function testPhpInfo() {
+  createCard('grid-runtime', 'phpinfo', '🐘 PHP Runtime (/api/env-check)');
+  const res = await fetchTest(BASE + '/api/env-check');
+  if (res.error) {
+    updateCard('phpinfo', 'fail', `<span class="error-msg">${escHtml(res.error)}</span>`, res.latency);
+    return;
+  }
+  if (res.status === 404) {
+    updateCard('phpinfo', 'warn',
+      row('Status', '404 — env-check endpoint not deployed') +
+      '<br><small style="color:#666">This is expected if you haven\'t added it yet.</small>',
+      res.latency);
+    return;
+  }
+  try {
+    const j = JSON.parse(res.text);
+    updateCard('phpinfo', 'pass',
+      row('PHP Version', j.php_version || '—') +
+      row('APP_ENV', j.app_env || '—') +
+      row('APP_DEBUG', j.app_debug || '—') +
+      row('Cache Driver', j.cache_driver || '—') +
+      row('Session Driver', j.session_driver || '—'),
+      res.latency);
+  } catch(_) {
+    updateCard('phpinfo', 'warn',
+      row('Status', res.status) + '<br>Response not JSON:' + jsonPreview(res.text),
+      res.latency);
+  }
+}
+
+async function testCategories() {
+  createCard('grid-api', 'cats', '📂 GET /api/categories');
+  const res = await fetchTest(BASE + '/api/categories');
+  if (res.error) {
+    updateCard('cats', 'fail', `<span class="error-msg">${escHtml(res.error)}</span>`, res.latency);
+    return;
+  }
+  if (!res.ok) {
+    updateCard('cats', 'fail', row('HTTP', res.status) + jsonPreview(res.text), res.latency);
+    return;
+  }
+  try {
+    const j = JSON.parse(res.text);
+    const arr = Array.isArray(j) ? j : (j.data || []);
+    updateCard('cats', 'pass',
+      row('HTTP', res.status) + row('Count', arr.length + ' categories') + jsonPreview(res.text),
+      res.latency);
+  } catch(_) {
+    updateCard('cats', 'warn', row('HTTP', res.status) + '<br>Non-JSON response' + jsonPreview(res.text), res.latency);
+  }
+}
+
+async function testMenu() {
+  createCard('grid-api', 'menu', '🍽️ GET /api/menu');
+  const res = await fetchTest(BASE + '/api/menu');
+  if (res.error) {
+    updateCard('menu', 'fail', `<span class="error-msg">${escHtml(res.error)}</span>`, res.latency);
+    return;
+  }
+  if (!res.ok) {
+    updateCard('menu', 'fail', row('HTTP', res.status) + jsonPreview(res.text), res.latency);
+    return;
+  }
+  try {
+    const j = JSON.parse(res.text);
+    const arr = Array.isArray(j) ? j : (j.data || []);
+    updateCard('menu', 'pass',
+      row('HTTP', res.status) + row('Items', arr.length + ' menu items') + jsonPreview(res.text),
+      res.latency);
+  } catch(_) {
+    updateCard('menu', 'warn', row('HTTP', res.status) + jsonPreview(res.text), res.latency);
+  }
+}
+
+async function testOrders() {
+  createCard('grid-api', 'orders', '📋 GET /api/orders');
+  const res = await fetchTest(BASE + '/api/orders');
+  if (res.error) {
+    updateCard('orders', 'fail', `<span class="error-msg">${escHtml(res.error)}</span>`, res.latency);
+    return;
+  }
+  if (!res.ok) {
+    updateCard('orders', 'fail', row('HTTP', res.status) + jsonPreview(res.text), res.latency);
+    return;
+  }
+  try {
+    const j = JSON.parse(res.text);
+    const arr = Array.isArray(j) ? j : (j.data || []);
+    updateCard('orders', 'pass',
+      row('HTTP', res.status) + row('Orders', arr.length) + jsonPreview(res.text),
+      res.latency);
+  } catch(_) {
+    updateCard('orders', 'warn', row('HTTP', res.status) + jsonPreview(res.text), res.latency);
+  }
+}
+
+async function testCors() {
+  createCard('grid-cors', 'cors', '🔒 CORS Headers (OPTIONS)');
+  const res = await fetchTest(BASE + '/api/categories', {
+    method: 'OPTIONS',
+    headers: { 'Origin': 'http://localhost:19006', 'Access-Control-Request-Method': 'GET' }
+  });
+  if (res.error) {
+    updateCard('cors', 'fail', `<span class="error-msg">${escHtml(res.error)}</span>`, res.latency);
+    return;
+  }
+  const acao = res.headers.get('access-control-allow-origin') || '(missing)';
+  const acam = res.headers.get('access-control-allow-methods') || '(missing)';
+  const acah = res.headers.get('access-control-allow-headers') || '(missing)';
+  const ok = acao !== '(missing)';
+  updateCard('cors', ok ? 'pass' : 'warn',
+    row('Status', res.status) +
+    row('Allow-Origin', escHtml(acao)) +
+    row('Allow-Methods', escHtml(acam)) +
+    row('Allow-Headers', escHtml(acah)),
+    res.latency);
+}
+
+async function testContentType() {
+  createCard('grid-cors', 'ct', '📄 Content-Type JSON');
+  const res = await fetchTest(BASE + '/api/categories');
+  if (res.error) {
+    updateCard('ct', 'fail', `<span class="error-msg">${escHtml(res.error)}</span>`, res.latency);
+    return;
+  }
+  const ct = res.headers.get('content-type') || '(missing)';
+  const ok = ct.includes('application/json');
+  updateCard('ct', ok ? 'pass' : 'warn',
+    row('Content-Type', escHtml(ct)) +
+    (ok ? '' : '<br><span class="error-msg">Expected application/json</span>'),
+    res.latency);
+}
+
+async function testCreateOrder() {
+  createCard('grid-post', 'create-order', '🛒 POST /api/orders');
+  const payload = {
+    table_id: 1,
+    items: [{ id: '101', name: 'Test Item', quantity: 1, price: 50 }]
+  };
+  const res = await fetchTest(BASE + '/api/orders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (res.error) {
+    updateCard('create-order', 'fail', `<span class="error-msg">${escHtml(res.error)}</span>`, res.latency);
+    return;
+  }
+  const ok = res.status === 200 || res.status === 201;
+  updateCard('create-order', ok ? 'pass' : 'warn',
+    row('HTTP', res.status) + jsonPreview(res.text),
+    res.latency);
+}
+
+async function testSyncState() {
+  createCard('grid-post', 'sync', '🔄 POST /api/sync-state');
+  const res = await fetchTest(BASE + '/api/sync-state', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ categories: [], menu: [], orders: [] })
+  });
+  if (res.error) {
+    updateCard('sync', 'fail', `<span class="error-msg">${escHtml(res.error)}</span>`, res.latency);
+    return;
+  }
+  const ok = res.status < 400;
+  updateCard('sync', ok ? 'pass' : 'fail',
+    row('HTTP', res.status) + jsonPreview(res.text),
+    res.latency);
+}
+
+// ── ORCHESTRATOR ─────────────────────────────────────
+
+async function runAllTests() {
+  clearResults();
+  document.getElementById('summary-bar').style.display = 'none';
+  const t0 = Date.now();
+
+  // Run in parallel groups
+  await Promise.all([testRootReachable(), testPhpInfo()]);
+  await Promise.all([testCategories(), testMenu(), testOrders()]);
+  await Promise.all([testCors(), testContentType()]);
+  await Promise.all([testCreateOrder(), testSyncState()]);
+
+  // Summary
+  let pass = 0, fail = 0, warn = 0;
+  Object.values(cards).forEach(c => {
+    if (c.classList.contains('pass')) pass++;
+    else if (c.classList.contains('fail')) fail++;
+    else if (c.classList.contains('warn')) warn++;
+  });
+  document.getElementById('sum-pass').textContent = pass;
+  document.getElementById('sum-fail').textContent = fail;
+  document.getElementById('sum-warn').textContent = warn;
+  document.getElementById('sum-time').textContent = ((Date.now() - t0) / 1000).toFixed(2) + 's';
+  document.getElementById('summary-bar').style.display = 'flex';
+  document.getElementById('timestamp').textContent = 'Run at: ' + new Date().toLocaleString();
+}
+
+function clearResults() {
+  ['grid-runtime','grid-api','grid-cors','grid-post'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+  cards = {};
+  document.getElementById('timestamp').textContent = '';
+  document.getElementById('summary-bar').style.display = 'none';
+}
+
+// Auto-run on load
+window.addEventListener('DOMContentLoaded', runAllTests);
+</script>
+</body>
+</html>

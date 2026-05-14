@@ -237,4 +237,23 @@ class ApiController extends Controller
             ],
         ], 201);
     }
+
+    /**
+     * GET /api/env-check
+     * Returns runtime environment info for the Vercel diagnostic page.
+     */
+    public function envCheck(): JsonResponse
+    {
+        return response()->json([
+            'success'        => true,
+            'php_version'    => PHP_VERSION,
+            'app_env'        => env('APP_ENV', 'unknown'),
+            'app_debug'      => env('APP_DEBUG', 'unknown'),
+            'cache_driver'   => env('CACHE_DRIVER', 'unknown'),
+            'session_driver' => env('SESSION_DRIVER', 'unknown'),
+            'log_channel'    => env('LOG_CHANNEL', 'unknown'),
+            'db_connection'  => env('DB_CONNECTION', 'unknown'),
+            'server_time'    => now()->toIso8601String(),
+        ]);
+    }
 }

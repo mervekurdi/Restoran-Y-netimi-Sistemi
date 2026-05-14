@@ -17,6 +17,7 @@ Route::get('/categories', [ApiController::class, 'categories']);
 Route::get('/menu',       [ApiController::class, 'menu']);
 Route::post('/sync-state', [ApiController::class, 'syncState']);
 Route::post('/upload-image', [ApiController::class, 'uploadImage']);
+Route::get('/env-check',  [ApiController::class, 'envCheck']);
 
 // Orders
 Route::get('/orders',     [ApiController::class, 'listOrders']);
