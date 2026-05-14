@@ -17,4 +17,16 @@ require __DIR__.'/../vendor/autoload.php';
 /** @var Application $app */
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
+// Auto-create SQLite database file and run migrations on cold start
+$dbPath = '/tmp/database.sqlite';
+if (!file_exists($dbPath) || filesize($dbPath) === 0) {
+    touch($dbPath);
+    try {
+        $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
+        $kernel->call('migrate', ['--force' => true]);
+    } catch (\Throwable $e) {
+        error_log('Migration failed: ' . $e->getMessage());
+    }
+}
+
 $app->handleRequest(Request::capture());

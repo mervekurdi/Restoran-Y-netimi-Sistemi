@@ -1,13 +1,23 @@
 {
     "version": 2,
     "builds": [
-        { "src": "/api/index.php", "use": "vercel-php@0.9.0" },
+        {
+            "src": "/api/index.php",
+            "use": "vercel-php@0.9.0",
+            "config": {
+                "maxDuration": 30
+            }
+        },
         { "src": "/public/**", "use": "@vercel/static" }
     ],
     "routes": [
         {
             "src": "/env-test",
             "dest": "public/env-test.html"
+        },
+        {
+            "src": "/",
+            "dest": "public/customer.html"
         },
         {
             "src": "/admin",
@@ -30,19 +40,23 @@
             "dest": "public/$1/$2"
         },
         {
-            "src": "/(.*)",
+            "src": "/api/(.*)",
             "headers": {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type, Accept, Authorization, X-Requested-With"
             },
             "dest": "/api/index.php"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/api/index.php"
         }
     ],
     "env": {
         "APP_NAME": "Restoran",
         "APP_ENV": "production",
-        "APP_DEBUG": "false",
+        "APP_DEBUG": "true",
         "APP_KEY": "base64:QcpPcomZlw2bWPgHPghJ4OyTNOLOJdzTbjyUOg2agPw=",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
@@ -54,6 +68,7 @@
         "SESSION_DRIVER": "cookie",
         "VIEW_COMPILED_PATH": "/tmp/views",
         "DB_CONNECTION": "sqlite",
-        "DB_DATABASE": "/tmp/database.sqlite"
+        "DB_DATABASE": "/tmp/database.sqlite",
+        "COMPOSER_IGNORE_PLATFORM_REQS": "1"
     }
 }
